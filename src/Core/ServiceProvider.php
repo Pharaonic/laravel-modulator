@@ -1,6 +1,6 @@
 <?php
 
-namespace Pharaonic\Laravel\Modulator;
+namespace Pharaonic\Laravel\Modulator\Core;
 
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
