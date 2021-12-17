@@ -18,6 +18,12 @@ class ServiceProvider extends IlluminateServiceProvider
 
         // Modulator Loaders
         $this->loadConfig();
+        $this->loadViews();
+        $this->loadMigrations();
+        // loadFactoriesFrom
+        $this->registerCommands();
+        $this->loadTranslations();
+        // loadViewComponentsAs
     }
 
     /**
@@ -39,5 +45,42 @@ class ServiceProvider extends IlluminateServiceProvider
                 );
             }
         }
+    }
+
+    protected function registerCommands()
+    {
+        if (!static::$module) return;
+
+        if ($this->app->runningInConsole()) {
+            if (file_exists($commands = module_path(static::$module, 'Commands'))) {
+                $module = 'App\Modules\\' . static::$module . '\Commands\\';
+                $commands = array_map(function ($command) use ($module) {
+                    return $module . str_replace('.php', '', $command);
+                }, getFiles($commands));
+
+                $this->commands($commands);
+            }
+
+            $console = module_path(static::$module, 'routes/console.php');
+            if (file_exists($console)) require $console;
+        }
+    }
+
+    protected function loadTranslations()
+    {
+        if (file_exists($dir = module_path(static::$module, 'resources/lang')))
+            $this->loadTranslationsFrom($dir, studlyToSlug(static::$module));
+    }
+
+    protected function loadMigrations()
+    {
+        if (file_exists($dir = module_path(static::$module, 'database/migrations')))
+            $this->loadMigrationsFrom($dir);
+    }
+
+    protected function loadViews()
+    {
+        if (file_exists($dir = module_path(static::$module, 'resources/views')))
+            $this->loadViewsFrom($dir, studlyToSlug(static::$module));
     }
 }
