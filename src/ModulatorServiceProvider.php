@@ -43,6 +43,15 @@ class ModulatorServiceProvider extends ServiceProvider
 
     protected function registerProviders()
     {
-        $this->app->register(AppServiceProvider::class);
+        foreach (modules() as $module) {
+            if (file_exists($providers = module_path($module, 'Providers'))) {
+                $module = 'App\Modules\\' . $module . '\Providers\\';
+
+                foreach (getFiles($providers) as $provider) {
+                    $provider = $module . substr($provider, 0, -4);
+                    $this->app->register($provider);
+                }
+            }
+        }
     }
 }
