@@ -32,7 +32,10 @@
     "autoload": {
         "psr-4": {
             "Pharaonic\\Laravel\\Modulator\\": "src"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true

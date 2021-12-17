@@ -2,6 +2,7 @@
 
 namespace Pharaonic\Laravel\Modulator;
 
+use App\Modules\Customers\Providers\AppServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class ModulatorServiceProvider extends ServiceProvider
@@ -15,6 +16,9 @@ class ModulatorServiceProvider extends ServiceProvider
     {
         // Config
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'modulator');
+
+        // Providers
+        $this->registerProviders();
     }
 
     /**
@@ -35,5 +39,10 @@ class ModulatorServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/config.php' => config_path('modulator.php'),
         ], ['config', 'pharaonic', 'modulator']);
+    }
+
+    protected function registerProviders()
+    {
+        $this->app->register(AppServiceProvider::class);
     }
 }
