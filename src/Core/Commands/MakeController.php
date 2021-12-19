@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Pharaonic\Laravel\Modulator\Core\Command;
 
-class MakeCommand extends Command
+class MakeController extends Command
 {
     protected $description = 'Create a new controller class of a module';
     protected $signature = 'module:make:controller {module : Module\'s name} {name : Controller\'s name}
