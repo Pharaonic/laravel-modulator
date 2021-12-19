@@ -1,0 +1,33 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+{{ modelNamespace }}
+
+class {{ class }}{{ interface }}
+{
+    {{ trait }}
+
+    /**
+     * Create the event listener.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * Handle the event.
+     *
+     * @param  {{ modelNamespace }}  ${{ modelVariable }}
+     * @return void
+     */
+    public function handle({{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+}
