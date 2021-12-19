@@ -3,6 +3,7 @@
 namespace Pharaonic\Laravel\Modulator\Core\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class Make extends Command
@@ -22,44 +23,85 @@ class Make extends Command
     protected $description = 'Create a new module.';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
      */
     public function handle()
     {
-        $name = Str::studly($this->argument('name'));
-        $path = module_path($name);
+        $this->name = Str::studly($this->argument('name'));
+        $this->slug = studlyToSlug($this->name);
+        $this->path = module_path($this->name);
 
-        $this->line($name);
-        $this->info($name);
-        $this->comment($name);
-        $this->question($name);
-        $this->warn($name);
-        $this->error($name);
-        $this->alert($name);
+        // IF EXISTS
+        if (File::isDirectory($this->path))
+            return $this->error('  Module is already exists.  ');
 
-        $this->newLine(2);
+        // PREPARE THE MODULE MODULE
+        $base = __DIR__ . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR;
 
-        $this->table(
-            ['Name', 'Email'],
-            [
-                [
-                    'asd', 'ss'
-                ]
-            ]
-        );
+        if (file_exists($this->tmp = $base . 'module-tmp'))
+            File::deleteDirectory($this->tmp);
 
-        return 0;
+
+        if (File::copyDirectory($base . 'module', $this->tmp)) {
+            $this->comment('Creating a new module [' . $this->name . ']');
+
+            // CONFIG
+            $this->inject('config/app.php');
+            $this->info('DONE : Config');
+
+            // DATABSE
+            $this->inject('database/seeders/DatabaseSeeder.php');
+            $this->info('DONE : Database');
+
+            // PROVIDERS
+            $this->inject('Providers/AppServiceProvider.php');
+            $this->inject('Providers/BroadcastServiceProvider.php');
+            $this->inject('Providers/EventServiceProvider.php');
+            $this->inject('Providers/RouteServiceProvider.php');
+            $this->info('DONE : Providers');
+
+            // RESOURCES
+            $this->inject('resources/lang/en/example.php');
+            $this->inject('resources/views/example.blade.php');
+            $this->info('DONE : Resources');
+
+            // ROUTES
+            $this->inject('routes/api.php');
+            $this->inject('routes/channels.php');
+            $this->inject('routes/console.php');
+            $this->inject('routes/web.php');
+            $this->info('DONE : Routes');
+            $this->newLine(1);
+
+            // COPY TO THE MAIN PATH
+            File::copyDirectory($this->tmp, $this->path);
+            $this->info('Module created successfully.');
+
+            // DELETE TEMP
+            File::deleteDirectory($this->tmp);
+        } else {
+            $this->error('  There\'s something wrong!');
+        }
+
+        return true;
+    }
+
+    /**
+     * Inject the data
+     * 
+     * @param string $path
+     * @return void
+     */
+    protected function inject(string $path)
+    {
+        $path = $this->tmp . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, explode('/', $path));
+        $content = file_get_contents($path);
+
+        $content = str_replace('{{ module-name }}', $this->name, $content);
+        $content = str_replace('{{ module-slug }}', $this->slug, $content);
+
+        file_put_contents($path, $content);
     }
 }
