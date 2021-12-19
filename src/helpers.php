@@ -34,25 +34,25 @@ if (!function_exists('modules')) {
 
 // Config Path
 if (!function_exists('module_config_path')) {
-    function module_config_path(string $module)
+    function module_config_path(string $module, ?string $extra = null)
     {
-        return module_path($module) . DIRECTORY_SEPARATOR . 'config';
+        return module_path($module, 'config' . ($extra ? '/' . $extra : null));
     }
 }
 
 // Database Path
 if (!function_exists('module_database_path')) {
-    function module_database_path(string $module)
+    function module_database_path(string $module, ?string $extra = null)
     {
-        return module_path($module) . DIRECTORY_SEPARATOR . 'database';
+        return module_path($module, 'database' . ($extra ? '/' . $extra : null));
     }
 }
 
 // Resources Path
 if (!function_exists('module_resource_path')) {
-    function module_resource_path(string $module)
+    function module_resource_path(string $module, ?string $extra = null)
     {
-        return module_path($module) . DIRECTORY_SEPARATOR . 'resources';
+        return module_path($module, 'resources' . ($extra ? '/' . $extra : null));
     }
 }
 
