@@ -12,7 +12,7 @@
 </p>
 
 <h3 align="center">Laravel Modulator</h3>
-<h5 align="center">HMVC creation and handling in an easy and simple way.</h5>
+<h5 align="center">HMVC creating and handling in an easy and simple way.</h5>
 
 
 ## Documentation
