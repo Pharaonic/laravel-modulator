@@ -20,10 +20,8 @@ class ServiceProvider extends IlluminateServiceProvider
         $this->loadConfig();
         $this->loadViews();
         $this->loadMigrations();
-        // loadFactoriesFrom
         $this->registerCommands();
         $this->loadTranslations();
-        // loadViewComponentsAs
     }
 
     /**

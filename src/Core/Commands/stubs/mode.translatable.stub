@@ -1,0 +1,33 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Pharaonic\Laravel\Translatable\Translatable;
+
+class {{ class }} extends Model
+{
+    use HasFactory, Translatable;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = '{{ table }}';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [];
+
+    /**
+     * Translatable attributes names.
+     *
+     * @var array
+     */
+    protected $translatableAttributes = [];
+}

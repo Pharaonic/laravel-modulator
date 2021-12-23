@@ -113,25 +113,5 @@ class Command extends ConsoleCommand
     {
         $this->prepare();
         $this->exec();
-        // // MODULE TESTS
-        // if (!file_exists(module_path($this->argument('module'), 'tests'))) {
-        //     $this->error('Tests directory has not been found.');
-        //     return false;
-        // }
-
-        // // COMMAND
-        // $command = 'php artisan test app/Modules/' . $this->argument('module') . '/tests';
-
-        // if ($this->option('list')) {
-        //     $command .= ' --list-tests';
-        // } else {
-        //     if ($filter = $this->option('filter')) $command .= ' --filter=' . $filter;
-        //     if ($this->option('stop-on-failure')) $command .= ' --stop-on-failure';
-        // }
-
-        // $process = Process::fromShellCommandline($command);
-        // $process->run();
-
-        // return true;
     }
 }

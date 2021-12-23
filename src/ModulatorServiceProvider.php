@@ -38,6 +38,7 @@ use Pharaonic\Laravel\Modulator\Core\Commands\{
     RouteList,
     Test
 };
+use Pharaonic\Laravel\Modulator\Core\Commands\Packages\MakeTranslatable;
 
 class ModulatorServiceProvider extends ServiceProvider
 {
@@ -80,7 +81,7 @@ class ModulatorServiceProvider extends ServiceProvider
         ], ['config', 'pharaonic', 'modulator']);
 
 
-        // Commands
+        // Commands (Modulator)
         $this->commands([
             DBSeed::class,
             Make::class,
@@ -116,6 +117,9 @@ class ModulatorServiceProvider extends ServiceProvider
             RouteList::class,
             Test::class
         ]);
+
+        // Load External Package's Commands
+        $this->registerPackagesCommands();
     }
 
     /**
@@ -134,6 +138,19 @@ class ModulatorServiceProvider extends ServiceProvider
                     $this->app->register($provider);
                 }
             }
+        }
+    }
+
+    /**
+     * Register all external packages CLI commands.
+     *
+     * @return void
+     */
+    protected function registerPackagesCommands()
+    {
+        // Translatable Package
+        if (trait_exists('Pharaonic\Laravel\Translatable\Translatable')) {
+            $this->commands(MakeTranslatable::class);
         }
     }
 }

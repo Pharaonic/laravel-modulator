@@ -3,6 +3,7 @@
 namespace Pharaonic\Laravel\Modulator\Core\Commands;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 use Pharaonic\Laravel\Modulator\Core\Command;
 
 class MigrateRefresh extends Command
@@ -18,10 +19,9 @@ class MigrateRefresh extends Command
     {
         if (!$this->moduleExists()) return;
 
-        if (!file_exists(module_database_path($this->module, 'migrations'))) {
-            $this->error('Migrations directory has not been found.');
-            return false;
-        }
+        // CHECK IF MIGRATIONS NOT EXISTS
+        if (!file_exists($migrations = module_database_path($this->module, 'migrations')))
+            File::makeDirectory($migrations, 0777, true, true);
 
         // Command
         $command = "migrate:refresh --path=" . $this->getShortPath('database/migrations');
