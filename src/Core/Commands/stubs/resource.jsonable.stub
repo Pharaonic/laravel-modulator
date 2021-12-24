@@ -1,0 +1,26 @@
+<?php
+
+namespace {{ namespace }};
+
+use Pharaonic\Laravel\Jsonable\Resources\Json\Resource;
+
+class {{ class }} extends Resource
+{
+    /**
+     * Response message
+     *
+     * @var string
+     */
+    public static $message = "{{ class }} message";
+
+    /**
+     * Transform the resource or resource collection into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     */
+    public function toArray($request)
+    {
+        return parent::toArray($request);
+    }
+}

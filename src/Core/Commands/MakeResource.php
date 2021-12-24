@@ -2,14 +2,17 @@
 
 namespace Pharaonic\Laravel\Modulator\Core\Commands;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Pharaonic\Laravel\Jsonable\Json;
 use Pharaonic\Laravel\Modulator\Core\Command;
 
 class MakeResource extends Command
 {
     protected $description = 'Create a new resource of a module';
     protected $signature = 'module:make:resource {module : Module\'s name} {name : Resource\'s name}
-                            {--c|collection : Create a resource collection.}';
+                            {--c|collection : Create a resource collection.}
+                            {--j|json : Create a new jsonable form request class}';
 
     public function exec()
     {
@@ -18,6 +21,15 @@ class MakeResource extends Command
         // CREATE RESOURCES DIRECTORY IF NOT FOUND
         if (!file_exists($resources = $this->getPath('Http/Resources')))
             File::makeDirectory($resources, 0777, true, true);
+
+        // Jsonable
+        if ($this->option('json')) {
+            if (class_exists(Json::class)) {
+                return Artisan::call('jsonable:resource App/Modules/' . $this->argument('module') . '/Http/Resources/' . $this->argument('name'), [], $this->getOutput());
+            } else {
+                return $this->warn('Jsonable Package has not been found.');
+            }
+        }
 
         // STUB
         $stubContent = file_get_contents(__DIR__ . '/stubs/resource' . ($this->option('collection') ? '-collection' : null) . '.stub');

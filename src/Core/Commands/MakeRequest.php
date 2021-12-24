@@ -2,14 +2,16 @@
 
 namespace Pharaonic\Laravel\Modulator\Core\Commands;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
+use Pharaonic\Laravel\Jsonable\Json;
 use Pharaonic\Laravel\Modulator\Core\Command;
 
 class MakeRequest extends Command
 {
     protected $description = 'Create a new form request class of a module';
-    protected $signature = 'module:make:request {module : Module\'s name} {name : Request\'s name}';
+    protected $signature = 'module:make:request {module : Module\'s name} {name : Request\'s name}
+                            {--j|json : Create a new jsonable form request class}';
 
     public function exec()
     {
@@ -18,6 +20,15 @@ class MakeRequest extends Command
         // CREATE REQUESTS DIRECTORY IF NOT FOUND
         if (!file_exists($requests = $this->getPath('Http/Requests')))
             File::makeDirectory($requests, 0777, true, true);
+
+        // Jsonable
+        if ($this->option('json')) {
+            if (class_exists(Json::class)) {
+                return Artisan::call('jsonable:request App/Modules/' . $this->argument('module') . '/Http/Requests/' . $this->argument('name'), [], $this->getOutput());
+            } else {
+                return $this->warn('Jsonable Package has not been found.');
+            }
+        }
 
         // STUB
         $stubContent = str_replace('{{ class }}', $this->name, file_get_contents(__DIR__ . '/stubs/request.stub'));
