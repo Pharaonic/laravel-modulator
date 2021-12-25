@@ -67,7 +67,6 @@ class MakeTranslatable extends Command
 
         $content = str_replace('{{ class }}', $this->name, file_get_contents(__DIR__ . '/../stubs/mode.translatabled.stub'));
         $content = str_replace('{{ namespace }}', $this->getNamespace('Models'), $content);
-        $content = str_replace('use HasFactory;', 'use HasFactory, Translatable;', $content);
         $content = str_replace('{{ table }}', $this->table, $content);
         $content = str_replace('{{ id }}', $this->id, $content);
 
