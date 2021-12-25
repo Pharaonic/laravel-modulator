@@ -5,6 +5,14 @@ namespace Pharaonic\Laravel\Modulator\Core\Commands;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Pharaonic\Laravel\Modulator\Core\Command;
+use Pharaonic\Laravel\Modulator\Core\StreamOutput as CoreStreamOutput;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\StreamOutput;
+use Symfony\Component\Process\Process;
 
 class MigrateRefresh extends Command
 {
@@ -33,6 +41,12 @@ class MigrateRefresh extends Command
         if ($step = $this->option('step')) $command .= ' --step=' . $step;
 
         // Calling
-        return Artisan::call($command, [], $this->getOutput());
+        $stream = fopen('php://stdout', 'w+');
+        $output = new CoreStreamOutput($stream, function ($line) {
+            return strpos($line, 'not found') === false;
+        });
+
+        Artisan::call($command, [], $output);
+        fclose($stream);
     }
 }
