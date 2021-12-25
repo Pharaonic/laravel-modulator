@@ -6,13 +6,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Pharaonic\Laravel\Modulator\Core\Command;
 use Pharaonic\Laravel\Modulator\Core\StreamOutput as CoreStreamOutput;
-use Symfony\Component\Console\Command\Command as SymfonyCommand;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\StreamOutput;
-use Symfony\Component\Process\Process;
 
 class MigrateRefresh extends Command
 {
