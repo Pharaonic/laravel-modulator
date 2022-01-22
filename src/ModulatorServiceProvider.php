@@ -2,6 +2,7 @@
 
 namespace Pharaonic\Laravel\Modulator;
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 use Pharaonic\Laravel\Modulator\Core\Commands\{
     DBSeed,
@@ -132,13 +133,31 @@ class ModulatorServiceProvider extends ServiceProvider
     protected function registerProviders()
     {
         foreach (modules() as $module) {
-            if (file_exists($providers = module_path($module, 'Providers'))) {
-                $module = 'App\Modules\\' . $module . '\Providers\\';
+            $this->loadModuleProviders($module);
+        }
+    }
 
-                foreach (getFiles($providers) as $provider) {
-                    $provider = $module . substr($provider, 0, -4);
-                    $this->app->register($provider);
-                }
+    /**
+     * Load the providers of a single module.
+     *
+     * @param string $module
+     * @param string|null $subModule
+     * @return void
+     */
+    private function loadModuleProviders(string $module, ?string $subModule = null)
+    {
+        $path = $subModule ? $subModule . '/Providers' : 'Providers';
+        $namespace = 'App\Modules\\' . str_replace('/', '\\', $module) . ($subModule ? '\\' . $subModule : null) . '\Providers\\';
+
+        if (!file_exists($path = module_path($module, $path))) {
+            foreach (File::directories(module_path($module)) as $sm) {
+                $module = trim(str_replace(module_path(), '', $sm), DIRECTORY_SEPARATOR);
+                $this->loadModuleProviders($module, basename($subModule));
+            }
+        } else {
+            foreach (getFiles($path) as $provider) {
+                $provider = $namespace . substr($provider, 0, -4);
+                $this->app->register($provider);
             }
         }
     }

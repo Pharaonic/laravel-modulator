@@ -29,9 +29,12 @@ class Make extends Command
      */
     public function handle()
     {
-        $this->name = Str::studly($this->argument('name'));
-        $this->slug = studlyToSlug($this->name);
+        $this->name = $this->argument('name');
         $this->path = module_path($this->name);
+
+        $this->nameNS = str_replace('/', '\\', $this->name);
+        $this->name = Str::studly($this->name);
+        $this->slug = studlyToSlug($this->name);
 
         // IF EXISTS
         if (File::isDirectory($this->path))
@@ -99,6 +102,8 @@ class Make extends Command
         $path = $this->tmp . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, explode('/', $path));
         $content = file_get_contents($path);
 
+        $content = str_replace('{{ module-name-namespace-double }}', str_replace('\\', '\\\\', $this->nameNS), $content);
+        $content = str_replace('{{ module-name-namespace }}', $this->nameNS, $content);
         $content = str_replace('{{ module-name }}', $this->name, $content);
         $content = str_replace('{{ module-slug }}', $this->slug, $content);
 

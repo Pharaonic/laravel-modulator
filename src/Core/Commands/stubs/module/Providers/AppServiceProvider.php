@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\{{ module-name }}\Providers;
+namespace App\Modules\{{ module-name-namespace }}\Providers;
 
 use Pharaonic\Laravel\Modulator\Core\ServiceProvider;
 

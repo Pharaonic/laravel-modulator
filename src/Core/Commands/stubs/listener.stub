@@ -23,7 +23,7 @@ class {{ class }}{{ interface }}
     /**
      * Handle the event.
      *
-     * @param  {{ modelNamespace }}  ${{ modelVariable }}
+     * @param  {{ model }} ${{ modelVariable }}
      * @return void
      */
     public function handle({{ model }} ${{ modelVariable }})

@@ -44,7 +44,7 @@ class DBSeed extends Command
         $command .= implode('\\\\', [
             '\\App',
             'Modules',
-            $this->argument('name'),
+            str_replace('/', '\\\\', $this->argument('name')),
             'database',
             'seeders',
             $this->option('class') ?? 'DatabaseSeeder'

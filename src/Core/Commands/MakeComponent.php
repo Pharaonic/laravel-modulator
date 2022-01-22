@@ -34,8 +34,9 @@ class MakeComponent extends Command
                 return studlyToSlug($dir);
             }, explode('/', $this->fullName));
 
-            $view = 'components.' . $this->slug . '.' . implode('.', $sPath);
+            $view = $this->slug . '::components.' . implode('.', $sPath);
             $content = str_replace('{{ view }}', 'view(\'' . $view . '\')', $content);
+
         }
 
         // SAVING COMMAND
@@ -56,7 +57,7 @@ class MakeComponent extends Command
 
         // CREATE VIEW OF NON-INLINE
         if (!$this->option('inline')) {
-            $view = resource_path('views/' . str_replace('.', '/', $view)) . '.blade.php';
+            $view = module_resource_path($this->module, 'views/components/' . implode('/', $sPath)  . '.blade.php');
 
             if (!File::isDirectory($dir = dirname($view)))
                 File::makeDirectory($dir, 0755, true, true);

@@ -19,6 +19,16 @@ if (!function_exists('module_path')) {
         if (!$module) return app_path('Modules');
         if ($extra) $extra = implode(DIRECTORY_SEPARATOR, explode('/', $extra));
 
+        // Sub-Module
+        if (strpos($module, '/') !== false) {
+            $module = explode('/', $module);
+            $moduleName = array_shift($module);
+
+            $extra = trim(implode(DIRECTORY_SEPARATOR, $module) . DIRECTORY_SEPARATOR . $extra, '/');
+            $module = $moduleName;
+            unset($moduleName);
+        }
+
         return app_path('Modules') . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . $extra;
     }
 }

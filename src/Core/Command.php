@@ -48,7 +48,7 @@ class Command extends ConsoleCommand
             $ns = '\\' . implode('\\', $ns);
         }
 
-        return \App\Modules::class . '\\' . $this->module . $ns;
+        return \App\Modules::class . '\\' . str_replace('/', '\\', $this->module) . $ns;
     }
 
     /**

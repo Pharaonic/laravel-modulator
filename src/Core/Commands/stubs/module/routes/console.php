@@ -15,5 +15,5 @@ use Illuminate\Support\Facades\Artisan;
 */
 
 // Artisan::command('who', function () {
-//     $this->comment('Moamen Eltouny from Pharaonic.io');
+//    $this->comment('Moamen Eltouny from Pharaonic.io');
 // })->purpose('Who are you?');

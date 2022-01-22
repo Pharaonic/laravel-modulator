@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\{{ module-name }}\Providers;
+namespace App\Modules\{{ module-name-namespace }}\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +14,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string|null
      */
-    // protected $namespace = 'App\\Modules\\{{ module-name }}\\Http\\Controllers';
+    // protected $namespace = 'App\\Modules\\{{ module-name-namespace-double }}\\Http\\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -23,7 +23,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->routes(function () {
+       $this->routes(function () {
             Route::middleware('api')
                 ->namespace($this->namespace)
                 ->name(studlyToSlug(AppServiceProvider::$module) . '.')

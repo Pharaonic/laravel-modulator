@@ -40,7 +40,7 @@ class MakeController extends Command
             $content = str_replace('{{ model }}', 'int', $content);
             $content = str_replace('{{ modelVariable }}', 'id', $content);
         }
-
+        
         // SAVING CONTROLLER
         if (file_exists($path = $this->getPath('Http/Controllers/' . $this->fullName . '.php')) && !$this->option('force')) {
             $this->error('Controller is already exists!');
@@ -59,6 +59,9 @@ class MakeController extends Command
 
         // CREATE TEST
         if ($this->option('test') || $this->option('pest')) {
+            if(substr(strtolower($this->fullName), -10) == 'controller')
+                $this->fullName = substr($this->fullName, 0, -10);
+                
             $command = 'module:make:test ' . $this->module . ' Http/Controllers/' . $this->fullName;
             $command .= $this->option('pest') ? ' --pest' : null;
             Artisan::call($command, [], $this->getOutput());

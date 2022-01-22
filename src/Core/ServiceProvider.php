@@ -7,6 +7,13 @@ use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 class ServiceProvider extends IlluminateServiceProvider
 {
     /**
+     * Module's configurations
+     *
+     * @var string
+     */
+    public static $module = null;
+
+    /**
      * Create a new service provider instance.
      *
      * @param  \Illuminate\Contracts\Foundation\Application  $app
@@ -25,12 +32,10 @@ class ServiceProvider extends IlluminateServiceProvider
     }
 
     /**
-     * Module's configurations
+     * Load Module Configrations.
      *
-     * @var string
+     * @return void
      */
-    public static $module = null;
-
     protected function loadConfig()
     {
         if (!static::$module) return;
@@ -45,13 +50,18 @@ class ServiceProvider extends IlluminateServiceProvider
         }
     }
 
+    /**
+     * Register all the commands of a single module.
+     *
+     * @return void
+     */
     protected function registerCommands()
     {
         if (!static::$module) return;
 
         if ($this->app->runningInConsole()) {
             if (file_exists($commands = module_path(static::$module, 'Commands'))) {
-                $module = 'App\Modules\\' . static::$module . '\Commands\\';
+                $module = 'App\Modules\\' . str_replace('/', '\\', static::$module) . '\Commands\\';
                 $commands = array_map(function ($command) use ($module) {
                     return $module . str_replace('.php', '', $command);
                 }, getFiles($commands));
@@ -64,18 +74,33 @@ class ServiceProvider extends IlluminateServiceProvider
         }
     }
 
+    /**
+     * load all translations of a single module.
+     *
+     * @return void
+     */
     protected function loadTranslations()
     {
         if (file_exists($dir = module_path(static::$module, 'resources/lang')))
             $this->loadTranslationsFrom($dir, studlyToSlug(static::$module));
     }
 
+    /**
+     * load all migrations of a single module.
+     *
+     * @return void
+     */
     protected function loadMigrations()
     {
         if (file_exists($dir = module_path(static::$module, 'database/migrations')))
             $this->loadMigrationsFrom($dir);
     }
 
+    /**
+     * load all views of a single module.
+     *
+     * @return void
+     */
     protected function loadViews()
     {
         if (file_exists($dir = module_path(static::$module, 'resources/views')))

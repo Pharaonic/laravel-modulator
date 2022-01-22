@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\{{ module-name }}\database\seeders;
+namespace App\Modules\{{ module-name-namespace }}\database\seeders;
 
 use Illuminate\Database\Seeder;
 
@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
+       $this->call([
             // 
         ]);
     }
