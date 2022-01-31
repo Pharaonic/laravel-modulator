@@ -4,6 +4,9 @@ namespace Pharaonic\Laravel\Modulator;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
+use Pharaonic\Laravel\Modulator\Core\Commands\Packages\{
+    TranslatableMake
+};
 use Pharaonic\Laravel\Modulator\Core\Commands\{
     DBSeed,
     Make,
@@ -40,7 +43,7 @@ use Pharaonic\Laravel\Modulator\Core\Commands\{
     RouteList,
     Test
 };
-use Pharaonic\Laravel\Modulator\Core\Commands\Packages\MakeTranslatable;
+
 
 class ModulatorServiceProvider extends ServiceProvider
 {
@@ -171,7 +174,7 @@ class ModulatorServiceProvider extends ServiceProvider
     {
         // Translatable Package
         if (trait_exists('Pharaonic\Laravel\Translatable\Translatable')) {
-            $this->commands(MakeTranslatable::class);
+            $this->commands(TranslatableMake::class);
         }
     }
 }

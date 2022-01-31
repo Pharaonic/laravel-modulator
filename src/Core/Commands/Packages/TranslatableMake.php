@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Pharaonic\Laravel\Modulator\Core\Command;
 
-class MakeTranslatable extends Command
+class TranslatableMake extends Command
 {
     protected $description = 'Create translatable Models & Migrations for a module';
     protected $signature = 'module:make:translatable {module} {name}
