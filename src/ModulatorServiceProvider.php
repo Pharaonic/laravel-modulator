@@ -4,8 +4,8 @@ namespace Pharaonic\Laravel\Modulator;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
-use Pharaonic\Laravel\Modulator\Core\Commands\Packages\{
-    TranslatableMake
+use Pharaonic\Laravel\Modulator\Packages\{
+    Translatable\Commands\TranslatableMake,
 };
 use Pharaonic\Laravel\Modulator\Core\Commands\{
     DBSeed,
@@ -43,7 +43,6 @@ use Pharaonic\Laravel\Modulator\Core\Commands\{
     RouteList,
     Test
 };
-
 
 class ModulatorServiceProvider extends ServiceProvider
 {
