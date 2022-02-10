@@ -138,11 +138,10 @@ class ModulatorServiceProvider extends ServiceProvider
 
         if (count($modules) > 0) {
             // CREATE MAIN SERVICE PROVIDER
-            if (!file_exists($SP = app_path('Modules/ServiceProvider.php')))
-                File::copy(
-                    str_replace('/', DIRECTORY_SEPARATOR, __DIR__ . '/Core/Commands/stubs/ServiceProvider.php'),
-                    $SP
-                );
+            if (!file_exists($SP = app_path('Modules/ServiceProvider.php'))) {
+                File::ensureDirectoryExists(module_path());
+                File::copy(str_replace('/', DIRECTORY_SEPARATOR, __DIR__ . '/Core/Commands/stubs/ServiceProvider.php'), $SP);
+            }
 
             foreach ($modules as $module) {
                 foreach (getFiles($path = module_path($module, 'Providers')) as $provider) {
