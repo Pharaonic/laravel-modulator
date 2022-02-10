@@ -43,8 +43,8 @@ class ServiceProvider extends IlluminateServiceProvider
         if (file_exists($config = module_config_path(static::$module))) {
             foreach (getFiles($config) as $file) {
                 $this->mergeConfigFrom(
-                    module_config_path(static::$module) . DIRECTORY_SEPARATOR . $file,
-                    'modules.' . studlyToSlug(static::$module) . '.' . str_replace('.php', '', $file)
+                    $file,
+                    'modules.' . studlyToSlug(static::$module) . '.' . str_replace('.php', '', $file->getRelativePathname())
                 );
             }
         }

@@ -1,14 +1,14 @@
 <?php
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-
 
 // Get Files List
 if (!function_exists('getFiles')) {
     function getFiles(string $dir)
     {
         if (!file_exists($dir)) return [];
-        return array_values(array_diff(scandir($dir), ['.', '..']));
+        return File::files($dir);
     }
 }
 
@@ -33,12 +33,42 @@ if (!function_exists('module_path')) {
     }
 }
 
+// Get Directories List of a module
+if (!function_exists('getModuleDirectories')) {
+    function getModuleDirectories(string $module)
+    {
+        $dir = module_path($module);
+        if (!File::exists($dir)) return [];
+
+        $mainModulesPath = module_path();
+        return array_map(function ($m) use ($mainModulesPath) {
+            return str_replace($mainModulesPath . '/', '', $m);
+        }, File::directories($dir));
+    }
+}
+
 // Modules List
 if (!function_exists('modules')) {
+    /**
+     * Get all modules names.
+     *
+     * @return array
+     */
     function modules()
     {
-        $dir = module_path();
-        return file_exists($dir) ? getFiles($dir) : [];
+        if (!file_exists($dir = module_path())) return [];
+
+        $list = [];
+        foreach (File::directories($dir) as $module) {
+            $module = str_replace($dir . '/', '', $module);
+            if (file_exists(module_path($module, 'Providers'))) {
+                $list[] = $module;
+            } else {
+                $list = [...$list, ...getModuleDirectories($module)];
+            }
+        }
+
+        return $list;
     }
 }
 

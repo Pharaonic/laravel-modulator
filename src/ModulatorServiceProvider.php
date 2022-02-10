@@ -134,32 +134,21 @@ class ModulatorServiceProvider extends ServiceProvider
      */
     protected function registerProviders()
     {
-        foreach (modules() as $module) {
-            $this->loadModuleProviders($module);
-        }
-    }
+        $modules = modules();
 
-    /**
-     * Load the providers of a single module.
-     *
-     * @param string $module
-     * @param string|null $subModule
-     * @return void
-     */
-    private function loadModuleProviders(string $module, ?string $subModule = null)
-    {
-        $path = $subModule ? $subModule . '/Providers' : 'Providers';
-        $namespace = 'App\Modules\\' . str_replace('/', '\\', $module) . ($subModule ? '\\' . $subModule : null) . '\Providers\\';
+        if (count($modules) > 0) {
+            // CREATE MAIN SERVICE PROVIDER
+            if (!file_exists($SP = app_path('Modules/ServiceProvider.php')))
+                File::copy(
+                    str_replace('/', DIRECTORY_SEPARATOR, __DIR__ . '/Core/Commands/stubs/ServiceProvider.php'),
+                    $SP
+                );
 
-        if (!file_exists($path = module_path($module, $path))) {
-            foreach (File::directories(module_path($module)) as $sm) {
-                $module = trim(str_replace(module_path(), '', $sm), DIRECTORY_SEPARATOR);
-                $this->loadModuleProviders($module, basename($subModule));
-            }
-        } else {
-            foreach (getFiles($path) as $provider) {
-                $provider = $namespace . substr($provider, 0, -4);
-                $this->app->register($provider);
+            foreach ($modules as $module) {
+                foreach (getFiles($path = module_path($module, 'Providers')) as $provider) {
+                    $provider = str_replace($path . '/', '', substr($provider, 0, -4));
+                    $this->app->register('App\Modules\\' . str_replace('/', '\\', $module) . '\Providers\\' . $provider);
+                }
             }
         }
     }

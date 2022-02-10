@@ -1,18 +1,11 @@
 <?php
 
-namespace App\Modules\{{ module-name-namespace }}\Providers;
+namespace App\Modules;
 
-use App\Modules\ServiceProvider;
+use Pharaonic\Laravel\Modulator\Core\ServiceProvider as PharaonicServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class ServiceProvider extends PharaonicServiceProvider
 {
-    /**
-     * Module's name
-     *
-     * @var string
-     */
-    public static $module = "{{ module-name }}";
-
     /**
      * Register any application services.
      *
@@ -30,7 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        parent::boot();
         //
     }
 }
