@@ -45,8 +45,10 @@ class Make extends Command
         $base = __DIR__ . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR;
 
         // CREATE MAIN SERVICE PROVIDER
-        if (!file_exists($SP = app_path('Modules/ServiceProvider.php')))
+        if (!file_exists($SP = app_path('Modules/ServiceProvider.php'))) {
+            File::ensureDirectoryExists(module_path());
             File::copy($base . DIRECTORY_SEPARATOR . 'ServiceProvider.php', $SP);
+        }
 
         if (file_exists($this->tmp = $base . 'module-tmp'))
             File::deleteDirectory($this->tmp);
