@@ -8,7 +8,7 @@ use Pharaonic\Laravel\Modulator\Core\Command;
 
 class MigrateStatus extends Command
 {
-    protected $description = 'Show the status of each migration of a module.';
+    protected $description = 'Show the status of each migration of a module';
     protected $signature = 'module:migrate:status {module}';
 
     public function exec()

@@ -5,6 +5,7 @@ namespace Pharaonic\Laravel\Modulator\Core\Commands;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Pharaonic\Laravel\Modulator\Core\Command;
+use Pharaonic\Laravel\Modulator\Core\StreamOutput as CoreStreamOutput;
 
 class MigrateReset extends Command
 {
@@ -16,16 +17,25 @@ class MigrateReset extends Command
         if (!$this->moduleExists()) return;
 
         // CHECK IF MIGRATIONS NOT EXISTS
-        if (!file_exists($migrations = module_database_path($this->module, 'migrations')))
-            File::makeDirectory($migrations, 0777, true, true);
+        if (!file_exists($path = module_database_path($this->module, 'migrations')))
+            File::makeDirectory($path, 0777, true, true);
 
-        // Command
-        $command = "migrate:reset --path=" . $this->getShortPath('database/migrations');
-
-        // Options
-        if ($this->option('force')) $command .= ' --force';
-
+        $files = array_diff(scandir($path), array('.', '..'));
+        arsort($files);
+     
         // Calling
-        return Artisan::call($command, [], $this->getOutput());
+        $stream = fopen('php://stdout', 'w+');
+        $output = new CoreStreamOutput($stream, function ($line) {
+            return strpos($line, 'not found') === false;
+        });
+
+        foreach ($files as $file) {
+            $command = "migrate:reset --realpath --path=" . $path . DIRECTORY_SEPARATOR . $file;
+            if ($this->option('force')) $command .= ' --force';
+
+            Artisan::call($command, [], $output);
+        }
+
+        return 0;
     }
 }

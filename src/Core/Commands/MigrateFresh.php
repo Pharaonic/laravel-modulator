@@ -8,7 +8,7 @@ use Pharaonic\Laravel\Modulator\Core\Command;
 
 class MigrateFresh extends Command
 {
-    protected $description = 'Drop all tables then re-run migrations of a module.';
+    protected $description = 'Drop all tables of the whole app then re-run migrations of a module.';
     protected $signature = 'module:migrate:fresh {module}
                             {--drop-views : Drop all tables and views}
                             {--drop-types : Drop all tables and types (Postgres only)}
