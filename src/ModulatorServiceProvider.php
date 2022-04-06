@@ -2,13 +2,14 @@
 
 namespace Pharaonic\Laravel\Modulator;
 
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 use Pharaonic\Laravel\Modulator\Packages\{
     Translatable\Commands\TranslatableMake,
 };
 use Pharaonic\Laravel\Modulator\Core\Commands\{
     DBSeed,
+    Delete,
+    Discover,
     Make,
     MakeCast,
     MakeChannel,
@@ -42,6 +43,7 @@ use Pharaonic\Laravel\Modulator\Core\Commands\{
     RouteList,
     Test
 };
+use Pharaonic\Laravel\Modulator\Core\ModulesFinder;
 
 class ModulatorServiceProvider extends ServiceProvider
 {
@@ -56,6 +58,7 @@ class ModulatorServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'modulator');
 
         // Providers
+        $this->app->singleton(ModulesFinder::class);
         $this->registerProviders();
     }
 
@@ -88,6 +91,8 @@ class ModulatorServiceProvider extends ServiceProvider
         $this->commands([
             DBSeed::class,
             Make::class,
+            Delete::class,
+            Discover::class,
             MakeCast::class,
             MakeChannel::class,
             MakeCommand::class,
@@ -132,20 +137,17 @@ class ModulatorServiceProvider extends ServiceProvider
      */
     protected function registerProviders()
     {
-        $modules = modules();
+        $finder = app(ModulesFinder::class);
 
-        if (count($modules) > 0) {
-            // CREATE MAIN SERVICE PROVIDER
-            if (!file_exists($SP = app_path('Modules/ServiceProvider.php'))) {
-                File::ensureDirectoryExists(module_path());
-                File::copy(str_replace('/', DIRECTORY_SEPARATOR, __DIR__ . '/Core/Commands/stubs/ServiceProvider.php'), $SP);
-            }
+        // Cache all current providers
+        if (!$finder->cached) {
+            $finder->build();
+        }
 
-            foreach ($modules as $module) {
-                foreach (getFiles($path = module_path($module, 'Providers')) as $provider) {
-                    $provider = str_replace($path . '/', '', substr($provider, 0, -4));
-                    $this->app->register('App\Modules\\' . str_replace('/', '\\', $module) . '\Providers\\' . $provider);
-                }
+        // Register the exists providers
+        foreach ($finder->list as $provider) {
+            if (class_exists($provider)) {
+                $this->app->register($provider);
             }
         }
     }

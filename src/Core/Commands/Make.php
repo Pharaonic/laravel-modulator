@@ -5,6 +5,7 @@ namespace Pharaonic\Laravel\Modulator\Core\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Pharaonic\Laravel\Modulator\Core\ModulesFinder;
 
 class Make extends Command
 {
@@ -33,7 +34,6 @@ class Make extends Command
         $this->path = module_path($this->name);
 
         $this->nameNS = str_replace('/', '\\', $this->name);
-        // $this->nameNS = str_replace('-', '', $this->name);
         $this->name = Str::studly($this->name);
         $this->slug = studlyToSlug($this->name);
 
@@ -87,6 +87,8 @@ class Make extends Command
             // COPY TO THE MAIN PATH
             File::copyDirectory($this->tmp, $this->path);
             $this->info('Module created successfully.');
+
+            app(ModulesFinder::class)->build();
 
             // DELETE TEMP
             File::deleteDirectory($this->tmp);
