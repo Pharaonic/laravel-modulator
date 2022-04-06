@@ -146,7 +146,7 @@ class ModulatorServiceProvider extends ServiceProvider
 
         // Register the exists providers
         foreach ($finder->list as $provider) {
-            if (class_exists($provider, false)) {
+            if (file_exists(base_path('a' . substr(str_replace('\\', '/', $provider), 1) . '.php'))) {
                 $this->app->register($provider);
             }
         }
