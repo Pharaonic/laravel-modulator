@@ -19,6 +19,8 @@ class RouteList extends Command
 
     public function exec()
     {
+        if (!$this->moduleExists()) return;
+
         $command = "route:list --name=[Module:" . $this->slug . "]";
 
         if ($this->option('compact')) {
