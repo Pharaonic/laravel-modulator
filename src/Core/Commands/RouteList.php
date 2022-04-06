@@ -19,12 +19,28 @@ class RouteList extends Command
 
     public function exec()
     {
-        $command = "route:list --name=" . $this->slug;
+        $command = "route:list --name=[Module:" . $this->slug . "]";
 
-        if ($this->option('compact')) $command .= ' --compact';
+        if ($this->option('compact')) {
+            if (version_compare(app()->version(), '8', '>')) {
+                $this->warn('Compact option just supported in versions that lower than 9.x');
+                return;
+            } else {
+                $command .= ' --compact';
+            }
+        }
+
+        if ($this->option('columns')) {
+            if (version_compare(app()->version(), '8', '>')) {
+                $this->warn('Columns option just supported in versions that lower than 9.x');
+                return;
+            } else {
+                $command .= ' --columns';
+            }
+        }
+
         if ($this->option('reverse')) $command .= ' --reverse';
         if ($this->option('json')) $command .= ' --json';
-        if ($columns = $this->option('columns')) $command .= ' --columns=' . $columns;
         if ($method = $this->option('method')) $command .= ' --method=' . $method;
         if ($sort = $this->option('sort')) $command .= ' --sort=' . $sort;
 
