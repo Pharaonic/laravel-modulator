@@ -23,18 +23,52 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-       $this->routes(function () {
-            Route::middleware('api')
-                ->namespace($this->namespace)
-                ->name(studlyToSlug(AppServiceProvider::$module) . '.')
-                ->prefix('api/' . studlyToSlug(AppServiceProvider::$module))
-                ->group(module_path(AppServiceProvider::$module, 'routes/api.php'));
+        $isConsole = $this->app->runningInConsole();
+        $module = studlyToSlug(AppServiceProvider::$module);
 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->prefix(studlyToSlug(AppServiceProvider::$module))
-                ->name(studlyToSlug(AppServiceProvider::$module) . '.')
-                ->group(module_path(AppServiceProvider::$module, 'routes/web.php'));
+        $this->routes(function () use ($isConsole, $module) {
+            $this->mapApiRoutes($isConsole, $module);
+            $this->mapWebRoutes($isConsole, $module);
         });
+    }
+
+    /**
+     * Load API routes
+     *
+     * @param boolean $isConsole
+     * @param string $module
+     * @return void
+     */
+    private function mapApiRoutes(bool $isConsole, string $module)
+    {
+        $routes = Route::middleware('api')
+            ->namespace($this->namespace)
+            ->prefix('api/' . $module)
+            ->name($module . '.');
+
+        if ($isConsole)
+            $routes->name('[Module:' . $module . '] ');
+
+        $routes->group(module_path(AppServiceProvider::$module, 'routes/api.php'));
+    }
+
+    /**
+     * Load Web routes
+     *
+     * @param boolean $isConsole
+     * @param string $module
+     * @return void
+     */
+    private function mapWebRoutes(bool $isConsole, string $module)
+    {
+        $routes = Route::middleware('web')
+            ->namespace($this->namespace)
+            ->prefix($module)
+            ->name($module . '.');
+
+        if ($isConsole)
+            $routes->name('[Module:' . $module . '] ');
+
+        $routes->group(module_path(AppServiceProvider::$module, 'routes/web.php'));
     }
 }
