@@ -3,7 +3,6 @@
 namespace Pharaonic\Laravel\Modulator\Core\Commands;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use Pharaonic\Laravel\Modulator\Core\Command;
 use Pharaonic\Laravel\Modulator\Core\ModulesFinder;
 

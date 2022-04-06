@@ -3,8 +3,6 @@
 namespace Pharaonic\Laravel\Modulator\Core\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use Pharaonic\Laravel\Modulator\Core\ModulesFinder;
 
 class Discover extends Command
@@ -31,6 +29,8 @@ class Discover extends Command
     public function handle()
     {
         app(ModulesFinder::class)->build();
+        $this->info('Modules has been discovered!');
+
         return true;
     }
 }
