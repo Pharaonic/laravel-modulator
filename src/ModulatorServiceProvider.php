@@ -146,7 +146,7 @@ class ModulatorServiceProvider extends ServiceProvider
 
         // Register the exists providers
         foreach ($finder->list as $provider) {
-            if (class_exists($provider)) {
+            if (class_exists($provider, false)) {
                 $this->app->register($provider);
             }
         }
