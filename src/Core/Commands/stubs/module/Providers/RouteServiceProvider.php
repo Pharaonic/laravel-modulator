@@ -46,8 +46,9 @@ class RouteServiceProvider extends ServiceProvider
             ->prefix('api/' . $module)
             ->name($module . '.');
 
-        if ($isConsole)
+        if ($isConsole && in_array('module:routes', $_SERVER['argv'] ?? [])) {
             $routes->name('[Module:' . $module . '] ');
+        }
 
         $routes->group(module_path(AppServiceProvider::$module, 'routes/api.php'));
     }
@@ -66,8 +67,9 @@ class RouteServiceProvider extends ServiceProvider
             ->prefix($module)
             ->name($module . '.');
 
-        if ($isConsole)
+        if ($isConsole && in_array('module:routes', $_SERVER['argv'] ?? [])) {
             $routes->name('[Module:' . $module . '] ');
+        }
 
         $routes->group(module_path(AppServiceProvider::$module, 'routes/web.php'));
     }
