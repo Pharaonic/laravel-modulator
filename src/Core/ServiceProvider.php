@@ -63,7 +63,7 @@ class ServiceProvider extends IlluminateServiceProvider
             if (file_exists($commands = module_path(static::$module, 'Commands'))) {
                 $module = 'App\Modules\\' . str_replace('/', '\\', static::$module) . '\Commands\\';
                 $commands = array_map(function ($command) use ($module) {
-                    return $module . str_replace('.php', '', $command);
+                    return $module . str_replace('.php', '', $command->getFileName());
                 }, getFiles($commands));
 
                 $this->commands($commands);
