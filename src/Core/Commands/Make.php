@@ -72,7 +72,7 @@ class Make extends Command
             $this->info('DONE : Providers');
 
             // RESOURCES
-            $this->inject('resources/lang/en/example.php');
+            $this->inject('lang/en/example.php');
             $this->inject('resources/views/example.blade.php');
             $this->info('DONE : Resources');
 
