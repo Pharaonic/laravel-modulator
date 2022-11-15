@@ -81,7 +81,7 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     protected function loadTranslations()
     {
-        if (file_exists($dir = module_path(static::$module, 'resources/lang')))
+        if (file_exists($dir = module_path(static::$module, 'lang')))
             $this->loadTranslationsFrom($dir, studlyToSlug(static::$module));
     }
 
