@@ -96,7 +96,7 @@ class Make extends Command
             $this->error('  There\'s something wrong!');
         }
 
-        return 1;
+        return 0;
     }
 
     /**
