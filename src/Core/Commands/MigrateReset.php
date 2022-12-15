@@ -29,12 +29,9 @@ class MigrateReset extends Command
             return strpos($line, 'not found') === false;
         });
 
-        foreach ($files as $file) {
-            $command = "migrate:reset --realpath --path=" . $path . DIRECTORY_SEPARATOR . $file;
-            if ($this->option('force')) $command .= ' --force';
-
-            Artisan::call($command, [], $output);
-        }
+        $command = "migrate:reset --realpath --path=" . $path;
+        if ($this->option('force')) $command .= ' --force';
+        Artisan::call($command, [], $output);
 
         return 0;
     }
