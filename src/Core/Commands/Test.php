@@ -31,6 +31,7 @@ class Test extends Command
         }
 
         $process = Process::fromShellCommandline($command);
+        $process->setPty(true);
         $process->run();
     }
 }
