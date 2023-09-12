@@ -24,11 +24,26 @@ class ServiceProvider extends IlluminateServiceProvider
         parent::__construct($app);
 
         // Modulator Loaders
+        $this->loadHelpers();
         $this->loadConfig();
         $this->loadViews();
         $this->loadMigrations();
         $this->registerCommands();
         $this->loadTranslations();
+    }
+
+    /**
+     * Load Module Helpers.
+     *
+     * @return void
+     */
+    protected function loadHelpers()
+    {
+        if (!static::$module) return;
+
+        if (file_exists($helpers = module_path(static::$module, 'helpers.php'))) {
+            require $helpers;
+        }
     }
 
     /**
