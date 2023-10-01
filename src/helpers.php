@@ -60,7 +60,7 @@ if (!function_exists('modules')) {
 
         $list = [];
         foreach (File::directories($dir) as $module) {
-            $module = str_replace($dir . '/', '', $module);
+            $module = str_replace($dir . DIRECTORY_SEPARATOR, '', $module);
             if (file_exists(module_path($module, 'Providers'))) {
                 $list[] = $module;
             } else {
