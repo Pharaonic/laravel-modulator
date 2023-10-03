@@ -21,7 +21,7 @@ class RouteList extends Command
     {
         if (!$this->moduleExists()) return;
 
-        $command = "route:list --name=[Module:" . $this->slug . "]";
+        $command = "route:list --name=$this->slug";
 
         if ($this->option('compact')) {
             if (version_compare(app()->version(), '8', '>')) {
