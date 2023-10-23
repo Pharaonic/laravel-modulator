@@ -31,6 +31,6 @@ class Discover extends Command
         app(ModulesFinder::class)->build();
         $this->info('Modules has been discovered!');
 
-        return true;
+        return 0;
     }
 }
