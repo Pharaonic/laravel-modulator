@@ -22,6 +22,7 @@ class TranslatableMake extends Command
             File::makeDirectory($models, 0777, true, true);
 
         $this->generateMainModel();
+        sleep(2);
         $this->generateTranslatableModel();
     }
 
