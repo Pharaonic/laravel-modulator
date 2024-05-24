@@ -20,11 +20,16 @@ class MakeFactory extends Command
 
         // FACTORY NAME
         $this->appendName(substr(strtolower($this->name), -7) != 'factory', 'Factory');
+        $fullNameWithoutFactory = substr($this->fullName, 0, -7);
+        $nameWithoutFactory = substr($this->name, 0, -7);
 
         // STUB
         $stubContent = file_get_contents(__DIR__ . '/stubs/factory.stub');
         $stubContent = str_replace('{{ factory }}', $this->name, $stubContent);
         $stubContent = str_replace('{{ factoryNamespace }}', $this->getNamespace('database/factories'), $stubContent);
+        $stubContent = str_replace('{{ namespacedModel }}', $this->getNamespace('Models/' . $fullNameWithoutFactory, false), $stubContent);
+        $stubContent = str_replace('{{ model }}', $nameWithoutFactory, $stubContent);
+
 
         // SAVING FACTORY
         if (file_exists($path = $this->getPath('database/factories/' . $this->fullName . '.php'))) {

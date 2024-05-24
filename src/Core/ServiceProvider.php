@@ -2,6 +2,7 @@
 
 namespace Pharaonic\Laravel\Modulator\Core;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
 class ServiceProvider extends IlluminateServiceProvider
@@ -30,8 +31,13 @@ class ServiceProvider extends IlluminateServiceProvider
         $this->loadMigrations();
         $this->registerCommands();
         $this->loadTranslations();
-    }
 
+        $this->booting(function(){
+            Factory::guessFactoryNamesUsing(function ($modelName) {
+                return 'App\Modules\\' . str_replace('/', '\\', static::$module) . '\database\factories\\' . class_basename($modelName) . 'Factory';
+            });
+        });
+    }
     /**
      * Load Module Helpers.
      *

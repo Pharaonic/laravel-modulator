@@ -39,12 +39,17 @@ class Command extends ConsoleCommand
      * Generate module namespace
      *
      * @param string|null $ns
+     * @param boolean $append
      * @return string
      */
-    protected function getNamespace(?string $ns = null)
+    protected function getNamespace(?string $ns = null, bool $append = true)
     {
         if ($ns) {
-            $ns = explode('/', trim($ns, '/') . ($this->sliceName ? '/' . $this->sliceName : null));
+            $ns = explode(
+                '/',
+                trim($ns, '/') .
+                ($append ? ($this->sliceName ? '/' . $this->sliceName : null) : null)
+            );
             $ns = '\\' . implode('\\', $ns);
         }
 
