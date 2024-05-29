@@ -32,10 +32,12 @@ class ServiceProvider extends IlluminateServiceProvider
         $this->registerCommands();
         $this->loadTranslations();
 
-        $this->booting(function(){
-            Factory::guessFactoryNamesUsing(function ($modelName) {
-                return 'App\Modules\\' . str_replace('/', '\\', static::$module) . '\database\factories\\' . class_basename($modelName) . 'Factory';
-            });
+        Factory::guessFactoryNamesUsing(function ($modelName) {
+            if (str_starts_with($modelName, 'App\Modules')) {
+                $module = explode('\\', $modelName)[2];
+                return 'App\Modules\\' . str_replace('/', '\\', $module) . '\database\factories\\' . class_basename($modelName) . 'Factory';
+            }
+            return Factory::resolveFactoryName($modelName);
         });
     }
     /**
@@ -45,7 +47,8 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     protected function loadHelpers()
     {
-        if (!static::$module) return;
+        if (!static::$module)
+            return;
 
         if (file_exists($helpers = module_path(static::$module, 'helpers.php'))) {
             require $helpers;
@@ -59,7 +62,8 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     protected function loadConfig()
     {
-        if (!static::$module) return;
+        if (!static::$module)
+            return;
 
         if (file_exists($config = module_config_path(static::$module))) {
             foreach (getFiles($config) as $file) {
@@ -78,7 +82,8 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     protected function registerCommands()
     {
-        if (!static::$module) return;
+        if (!static::$module)
+            return;
 
         if ($this->app->runningInConsole()) {
             if (file_exists($commands = module_path(static::$module, 'Commands'))) {
@@ -91,7 +96,8 @@ class ServiceProvider extends IlluminateServiceProvider
             }
 
             $console = module_path(static::$module, 'routes/console.php');
-            if (file_exists($console)) require $console;
+            if (file_exists($console))
+                require $console;
         }
     }
 
