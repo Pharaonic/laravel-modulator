@@ -3,7 +3,6 @@
 namespace Pharaonic\Laravel\Modulator\Core\Commands;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use Pharaonic\Laravel\Modulator\Core\Command;
 
 class MakeTest extends Command
@@ -18,22 +17,58 @@ class MakeTest extends Command
      *
      * @var string
      */
-
-
     public function exec()
     {
         if (!$this->moduleExists()) return;
 
         // APPEND MODULES TESTS TO PHPUNIT.XML
         if (file_exists($tests = base_path('phpunit.xml'))) {
-            if (strpos(
-                $phpunitContent = file_get_contents($tests),
-                '<testsuite name="Modules"><directory suffix="Test.php">./app/Modules/*/tests</directory></testsuite>'
-            ) === false) {
-                $phpunitContent = str_replace('</testsuites>', '    <testsuite name="Modules"><directory suffix="Test.php">./app/Modules/*/tests</directory></testsuite>' . PHP_EOL . '    </testsuites>', $phpunitContent);
+            $phpunitContent = file_get_contents($tests);
+
+            if (!str_contains($phpunitContent, './app/Modules/*/tests/Feature') || !str_contains($phpunitContent, './app/Modules/*/tests/Unit')) {
+                $phpunitContent = str_replace(
+                    [
+                        '<directory>tests/Unit</directory>',
+                        '<directory>tests/Feature</directory>',
+                        PHP_EOL . '        <testsuite name="Modules"><directory suffix="Test.php">./app/Modules/*/tests</directory></testsuite>'
+                    ],
+                    [
+                        '<directory>tests/Unit</directory>' . PHP_EOL . '            <directory>./app/Modules/*/tests/Unit</directory>',
+                        '<directory>tests/Feature</directory>' . PHP_EOL . '            <directory>./app/Modules/*/tests/Feature</directory>',
+                        '',
+                    ],
+                    $phpunitContent
+                );
+
                 File::replace($tests, $phpunitContent);
             }
         }
+
+        if (file_exists($tests = base_path('tests/Pest.php'))) {
+            $pestContent = file_get_contents($tests);
+
+            if (str_contains($pestContent, "'Feature'") && !str_contains($pestContent, '../app/Modules/*/tests/Feature')) {
+                $pestContent = str_replace(
+                    "'Feature'",
+                    "'Feature', '../app/Modules/*/tests/Feature'",
+                    $pestContent
+                );
+            }
+
+            if (
+                (str_contains($pestContent, "'Unit'") || str_contains($pestContent, '"Unit"'))
+                && !str_contains($pestContent, '../app/Modules/*/tests/Unit')
+            ) {
+                $pestContent = str_replace(
+                    ["'Unit'", '"Unit"'],
+                    "'Unit', '../app/Modules/*/tests/Unit'",
+                    $pestContent
+                );
+            }
+
+            File::replace($tests, $pestContent);
+        }
+
 
         // CREATE TESTS DIRECTORY IF NOT FOUND
         if (!file_exists($tests = module_path($this->module, 'tests'))) {
