@@ -27,7 +27,7 @@ class StreamOutput extends OutputStreamOutput
     /**
      * {@inheritdoc}
      */
-    protected function doWrite(string $message, bool $newline)
+    protected function doWrite(string $message, bool $newline): void
     {
         if ($this->condition && !(call_user_func($this->condition, $message))) return;
 
