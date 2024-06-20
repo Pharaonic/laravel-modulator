@@ -4,6 +4,7 @@ namespace Pharaonic\Laravel\Modulator\Core;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
+use Symfony\Component\Finder\SplFileInfo;
 
 class ServiceProvider extends IlluminateServiceProvider
 {
@@ -87,12 +88,20 @@ class ServiceProvider extends IlluminateServiceProvider
 
         if ($this->app->runningInConsole()) {
             if (file_exists($commands = module_path(static::$module, 'Commands'))) {
-                $module = 'App\Modules\\' . str_replace('/', '\\', static::$module) . '\Commands\\';
-                $commands = array_map(function ($command) use ($module) {
-                    return $module . str_replace('.php', '', $command->getFileName());
-                }, getFiles($commands));
+                $commandsList = [];
 
-                $this->commands($commands);
+                foreach (getFiles($commands, true) as $file) {
+                    $ns = str_replace([$commands, DIRECTORY_SEPARATOR], ['', '\\'], $file->getPath());
+                    $module = 'App\Modules\\' . str_replace('/', '\\', static::$module) . '\Commands\\';
+
+                    if (!empty($ns)) {
+                        $module .= ltrim($ns, '\\') . '\\';
+                    }
+
+                    $commandsList[] = $module . str_replace('.php', '', $file->getFileName());
+                }
+
+                $this->commands($commandsList);
             }
 
             $console = module_path(static::$module, 'routes/console.php');
