@@ -5,10 +5,28 @@ use Illuminate\Support\Str;
 
 // Get Files List
 if (!function_exists('getFiles')) {
-    function getFiles(string $dir)
+    /**
+     * Get all files in a directory.
+     *
+     * @param string $dir
+     * @param boolean $recursive
+     * @return array|\Symfony\Component\Finder\SplFileInfo[]|\Generator
+     */
+    function getFiles(string $dir, bool $recursive = false)
     {
-        if (!file_exists($dir)) return [];
-        return File::files($dir);
+        if (!is_dir($dir)) return [];
+
+        if (!$recursive) {
+            return File::files($dir);
+        }
+
+        $it = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir)
+        );
+
+        return new \CallbackFilterIterator($it, function ($file) {
+            return $file->isFile();
+        });
     }
 }
 
