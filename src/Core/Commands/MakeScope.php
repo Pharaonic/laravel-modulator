@@ -24,7 +24,7 @@ class MakeScope extends Command
         $content = str_replace('{{ class }}', $this->name, file_get_contents(__DIR__ . '/stubs/scope.stub'));
         $content = str_replace('{{ namespace }}', $this->getNamespace('Scopes'), $content);
 
-        // SAVING scope
+        // SAVING SCOPE
         if (file_exists($path = $this->getPath('Scopes/' . $this->fullName . '.php')) && !$this->option('force')) {
             $this->error('Scope is already exists!');
             return false;
