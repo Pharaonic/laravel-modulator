@@ -21,7 +21,7 @@ class MakeEnum extends Command
         if (!file_exists($enums = $this->getPath('Enums')))
             File::makeDirectory($enums, 0777, true, true);
 
-        $content = str_replace('{{ enum }}', $this->name, file_get_contents(__DIR__ . '/stubs/enum.stub'));
+        $content = str_replace('{{ class }}', $this->name, file_get_contents(__DIR__ . '/stubs/enum.stub'));
         $content = str_replace('{{ namespace }}', $this->getNamespace('Enums'), $content);
 
         // SAVING ENUM
