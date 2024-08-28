@@ -39,7 +39,6 @@ class MakeClass extends Command
             $this->warn('There is something wrong.');
         }
 
-
         // CREATE TEST
         if ($this->option('test') || $this->option('pest')) {
             $command = 'module:make:test ' . $this->module . ' Classes/' . $this->fullName;
