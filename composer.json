@@ -12,12 +12,12 @@
     "authors": [
         {
             "name": "Moamen Eltouny (Raggi)",
-            "email": "raggi@raggitech.com"
+            "email": "raggigroup@gmail.com"
         }
     ],
     "require": {
-        "php": "^8.2",
-        "laravel/framework": "11.*"
+        "php": "^8.2||^8.3",
+        "laravel/framework": "^11.0"
     },
     "config": {
         "sort-packages": true
