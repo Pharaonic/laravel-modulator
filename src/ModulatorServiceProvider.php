@@ -3,6 +3,7 @@
 namespace Pharaonic\Laravel\Modulator;
 
 use Illuminate\Support\ServiceProvider;
+use Laravel\Prompts\Output\ConsoleOutput;
 use Pharaonic\Laravel\Modulator\Packages\{
     Translatable\Commands\TranslatableMake,
 };
@@ -158,10 +159,16 @@ class ModulatorServiceProvider extends ServiceProvider
             $finder->build();
         }
 
+        $output = new ConsoleOutput();
+
         // Register the exists providers
         foreach ($finder->list as $provider) {
-            if (class_exists($provider, false)) {
-                $this->app->register($provider);
+            try {
+                if (class_exists($provider)) {
+                    $this->app->register($provider);
+                }
+            } catch (\Exception $e) {
+                $output->writeln("<comment>Failed to register provider: {$provider}, you need to run <info>module:discover</info> again.");
             }
         }
     }
