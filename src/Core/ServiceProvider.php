@@ -4,7 +4,6 @@ namespace Pharaonic\Laravel\Modulator\Core;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
-use Symfony\Component\Finder\SplFileInfo;
 
 class ServiceProvider extends IlluminateServiceProvider
 {
