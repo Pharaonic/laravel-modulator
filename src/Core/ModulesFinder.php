@@ -2,6 +2,7 @@
 
 namespace Pharaonic\Laravel\Modulator\Core;
 
+use Exception;
 use Illuminate\Support\Facades\File;
 
 class ModulesFinder
@@ -33,9 +34,8 @@ class ModulesFinder
             }
 
             foreach ($modules as $module) {
-                foreach (getFiles($path = module_path($module, 'Providers')) as $provider) {
-                    $provider = str_replace($path . '/', '', substr($provider, 0, -4));
-                    $this->list[] = 'App\Modules\\' . str_replace('/', '\\', $module) . '\Providers\\' . $provider;
+                foreach (getFiles(module_path($module, 'Providers')) as $provider) {
+                    $this->list[] = 'App\Modules\\' . $module . '\Providers\\' . $provider->getFilenameWithoutExtension();
                 }
             }
         }
