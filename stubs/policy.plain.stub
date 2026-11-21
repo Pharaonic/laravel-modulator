@@ -1,0 +1,10 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ namespacedUserModel }};
+
+class {{ class }}
+{
+    //
+}

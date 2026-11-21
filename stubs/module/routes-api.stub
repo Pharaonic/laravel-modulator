@@ -1,0 +1,12 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+| API routes of the {{ module }} module, loaded with the "api" middleware group
+| and the "api" prefix.
+*/
+
+// Route::get('/{{ slug }}', function () {
+//     return [];
+// });

@@ -1,0 +1,11 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+| Web routes of the {{ module }} module, loaded with the "web" middleware group.
+*/
+
+// Route::get('/{{ slug }}', function () {
+//     return view('{{ slug }}::index');
+// })->name('{{ slug }}.index');

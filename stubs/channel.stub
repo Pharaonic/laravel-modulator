@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ namespacedUserModel }};
+
+class {{ class }}
+{
+    /**
+     * Authenticate the user's access to the channel.
+     *
+     * @return array<string, mixed>|bool
+     */
+    public function join({{ userModel }} $user)
+    {
+        //
+    }
+}

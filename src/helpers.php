@@ -1,123 +1,52 @@
 <?php
 
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
+declare(strict_types=1);
 
-// Get Files List
-if (!function_exists('getFiles')) {
+use Pharaonic\Laravel\Modulator\Facades\Modules;
+use Pharaonic\Laravel\Modulator\Support\Identity;
+
+if (! function_exists('module_path')) {
     /**
-     * Get all files in a directory.
+     * The root directory of a module, or a path inside it.
      *
-     * @param string $dir
-     * @param boolean $recursive
-     * @return array|\Symfony\Component\Finder\SplFileInfo[]|\Generator
-     */
-    function getFiles(string $dir, bool $recursive = false)
-    {
-        if (!is_dir($dir)) return [];
-
-        if (!$recursive) {
-            return File::files($dir);
-        }
-
-        $it = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($dir)
-        );
-
-        return new \CallbackFilterIterator($it, function ($file) {
-            return $file->isFile();
-        });
-    }
-}
-
-// Module Path
-if (!function_exists('module_path')) {
-    function module_path(?string $module = null, ?string $extra = null)
-    {
-        if (!$module) return app_path('Modules');
-        if ($extra) $extra = implode(DIRECTORY_SEPARATOR, explode('/', $extra));
-
-        // Sub-Module
-        if (strpos($module, '/') !== false) {
-            $module = explode('/', $module);
-            $moduleName = array_shift($module);
-
-            $extra = trim(implode(DIRECTORY_SEPARATOR, $module) . DIRECTORY_SEPARATOR . $extra, '/');
-            $module = $moduleName;
-            unset($moduleName);
-        }
-
-        return app_path('Modules') . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . $extra;
-    }
-}
-
-// Get Directories List of a module
-if (!function_exists('getModuleDirectories')) {
-    function getModuleDirectories(string $module)
-    {
-        $dir = module_path($module);
-        if (!File::exists($dir)) return [];
-
-        $mainModulesPath = module_path();
-        return array_map(function ($m) use ($mainModulesPath) {
-            return str_replace($mainModulesPath . '/', '', $m);
-        }, File::directories($dir));
-    }
-}
-
-// Modules List
-if (!function_exists('modules')) {
-    /**
-     * Get all modules names.
+     * Without a module, returns the 1.x app/Modules directory (deprecated).
      *
-     * @return array
+     * @throws InvalidArgumentException When the identity is invalid or no module has it.
      */
-    function modules()
+    function module_path(?string $module = null, ?string $extra = null): string
     {
-        if (!file_exists($dir = module_path())) return [];
-
-        $list = [];
-        foreach (File::directories($dir) as $module) {
-            $module = str_replace($dir . DIRECTORY_SEPARATOR, '', $module);
-            if (file_exists(module_path($module, 'Providers'))) {
-                $list[] = $module;
-            } else {
-                $list = [...$list, ...getModuleDirectories($module)];
-            }
+        if ($module === null || $module === '') {
+            return app_path('Modules');
         }
 
-        return $list;
+        Identity::assert($module);
+        $found = Modules::find($module);
+
+        if ($found === null) {
+            throw new InvalidArgumentException(sprintf('Module [%s] does not exist.', $module));
+        }
+
+        return $found->path($extra);
     }
 }
 
-// Config Path
-if (!function_exists('module_config_path')) {
-    function module_config_path(string $module, ?string $extra = null)
+if (! function_exists('module_config_path')) {
+    function module_config_path(string $module, ?string $extra = null): string
     {
-        return module_path($module, 'config' . ($extra ? '/' . $extra : null));
+        return module_path($module, 'config'.($extra ? '/'.$extra : ''));
     }
 }
 
-// Database Path
-if (!function_exists('module_database_path')) {
-    function module_database_path(string $module, ?string $extra = null)
+if (! function_exists('module_database_path')) {
+    function module_database_path(string $module, ?string $extra = null): string
     {
-        return module_path($module, 'database' . ($extra ? '/' . $extra : null));
+        return module_path($module, 'database'.($extra ? '/'.$extra : ''));
     }
 }
 
-// Resources Path
-if (!function_exists('module_resource_path')) {
-    function module_resource_path(string $module, ?string $extra = null)
+if (! function_exists('module_resource_path')) {
+    function module_resource_path(string $module, ?string $extra = null): string
     {
-        return module_path($module, 'resources' . ($extra ? '/' . $extra : null));
-    }
-}
-
-// Convert studly to slug
-if (!function_exists('studlyToSlug')) {
-    function studlyToSlug(string $text)
-    {
-        return Str::slug(strtolower(trim(preg_replace('/[A-Z-]/', ' $0', $text))));
+        return module_path($module, 'resources'.($extra ? '/'.$extra : ''));
     }
 }

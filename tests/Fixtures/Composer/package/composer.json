@@ -1,0 +1,17 @@
+{
+    "name": "acme/shop",
+    "description": "A Composer package that provides modules.",
+    "type": "library",
+    "license": "MIT",
+    "extra": {
+        "pharaonic": {
+            "modulator": {
+                "pools": [
+                    {
+                        "path": "modules"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+<?php
+
+namespace {{ namespace }}\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+class {{ name }}ServiceProvider extends ServiceProvider
+{
+    /**
+     * Register the services of the {{ module }} module.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Bootstrap the services of the {{ module }} module.
+     *
+     * Its routes, views ("{{ slug }}::"), translations, config ("modules.{{ slug }}")
+     * and migrations are loaded by Modulator.
+     */
+    public function boot(): void
+    {
+        //
+    }
+}

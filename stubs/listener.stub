@@ -1,0 +1,14 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}class {{ class }}
+{
+    /**
+     * Handle the event.
+     */
+    public function handle({{ eventParameter }}): void
+    {
+        //
+    }
+}

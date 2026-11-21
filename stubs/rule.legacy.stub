@@ -1,0 +1,27 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Contracts\Validation\Rule;
+
+class {{ class }} implements Rule
+{
+    /**
+     * Determine if the validation rule passes.
+     *
+     * @param  string  $attribute
+     * @param  mixed  $value
+     */
+    public function passes($attribute, $value): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation error message.
+     */
+    public function message(): string
+    {
+        return 'The :attribute is invalid.';
+    }
+}
