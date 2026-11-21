@@ -31,7 +31,7 @@ abstract class MigrationCommand extends Command
     protected string $command = '';
 
     /**
-     * The options forwarded to it: database, force, pretend, seed, step.
+     * The options forwarded to it: database, force, pretend, seed, seeder, step.
      *
      * @var list<string>
      */
@@ -58,16 +58,20 @@ abstract class MigrationCommand extends Command
         foreach ($this->forward as $option) {
             $value = $this->option($option);
 
-            if ($option !== 'seed' && $value !== null && $value !== false) {
+            if (! in_array($option, ['seed', 'seeder'], true) && $value !== null && $value !== false) {
                 $parameters['--'.$option] = $value;
             }
         }
 
         $status = $this->call($this->command, $parameters);
 
-        if ($status === 0 && in_array('seed', $this->forward, true) && $this->option('seed')) {
+        $seeder = in_array('seeder', $this->forward, true) ? $this->option('seeder') : null;
+        $seeder = is_string($seeder) && $seeder !== '' ? $seeder : null;
+
+        if ($status === 0 && in_array('seed', $this->forward, true) && ($this->option('seed') || $seeder !== null)) {
             $status = $this->call('module:seed', array_filter([
                 'module' => $module->id(),
+                '--class' => $seeder,
                 '--database' => $this->option('database'),
                 '--force' => (bool) $this->option('force'),
             ]));
@@ -94,6 +98,7 @@ abstract class MigrationCommand extends Command
             'force' => ['force', null, InputOption::VALUE_NONE, 'Force the operation to run when in production'],
             'pretend' => ['pretend', null, InputOption::VALUE_NONE, 'Dump the SQL queries that would be run'],
             'seed' => ['seed', null, InputOption::VALUE_NONE, 'Run the module seeder afterwards'],
+            'seeder' => ['seeder', null, InputOption::VALUE_REQUIRED, 'The seeder class to run afterwards (implies --seed), as module:seed --class takes it'],
             'step' => $this->command === 'migrate'
                 ? ['step', null, InputOption::VALUE_NONE, 'Run each migration in its own batch, so it can be rolled back alone']
                 : ['step', null, InputOption::VALUE_REQUIRED, 'The number of migrations to roll back'],

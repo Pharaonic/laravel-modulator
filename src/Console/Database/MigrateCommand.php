@@ -18,5 +18,5 @@ final class MigrateCommand extends MigrationCommand
 
     protected string $command = 'migrate';
 
-    protected array $forward = ['database', 'force', 'pretend', 'seed', 'step'];
+    protected array $forward = ['database', 'force', 'pretend', 'seed', 'seeder', 'step'];
 }

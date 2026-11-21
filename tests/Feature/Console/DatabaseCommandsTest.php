@@ -112,6 +112,37 @@ PHP);
         $this->assertTrue(Schema::hasTable('blog_posts'));
     }
 
+    public function test_seeder_names_the_seeder_and_implies_seeding(): void
+    {
+        $this->write('Modules/Shop/database/seeders/DemoSeeder.php', <<<'PHP'
+<?php
+
+namespace Modules\Shop\Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class DemoSeeder extends Seeder
+{
+    public function run(): void
+    {
+        DB::table('shop_products')->insert(['name' => 'demo']);
+    }
+}
+PHP);
+        $this->reload();
+        $this->command('module:migrate', ['module' => 'Shop']);
+
+        [$status, $output] = $this->command('module:migrate:refresh', ['module' => 'Shop', '--seeder' => 'DemoSeeder']);
+
+        $this->assertSame(0, $status, $output);
+        $this->assertSame(['demo'], \DB::table('shop_products')->pluck('name')->all());
+
+        [$status, $output] = $this->command('module:migrate:refresh', ['module' => 'Shop', '--seeder' => 'MissingSeeder']);
+        $this->assertSame(1, $status);
+        $this->assertStringContainsString('does not exist', $output);
+    }
+
     public function test_fresh_is_refused_and_drops_nothing(): void
     {
         $this->command('module:migrate', ['module' => 'Shop']);

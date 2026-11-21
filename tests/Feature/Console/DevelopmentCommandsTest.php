@@ -66,5 +66,22 @@ class DevelopmentCommandsTest extends TestCase
         $this->assertStringContainsString('shop.index', $output);
         $this->assertStringContainsString('api/orders', $output, 'Children are included.');
         $this->assertStringNotContainsString('not-shop', $output, 'A name prefix is not ownership.');
+
+        [$status, $output] = $this->command('module:routes', ['--json' => true, '--columns' => ['uri,middleware'], '--sort' => 'uri', '--reverse' => true]);
+        $this->assertSame(0, $status, $output);
+        $this->assertSame([
+            ['uri' => 'shop', 'middleware' => 'web'],
+            ['uri' => 'blog', 'middleware' => ''],
+            ['uri' => 'api/orders', 'middleware' => 'api'],
+        ], json_decode(substr($output, (int) strpos($output, '[')), true));
+
+        [$status, $output] = $this->command('module:routes', ['--compact' => true]);
+        $this->assertSame(0, $status, $output);
+        $this->assertStringContainsString('| Module', $output);
+        $this->assertStringNotContainsString('| Name', $output);
+
+        [$status, $output] = $this->command('module:routes', ['--sort' => 'precedence']);
+        $this->assertSame(1, $status);
+        $this->assertStringContainsString('Unknown column', $output);
     }
 }

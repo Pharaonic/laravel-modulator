@@ -18,5 +18,5 @@ final class MigrateRefreshCommand extends MigrationCommand
 
     protected string $command = 'migrate:refresh';
 
-    protected array $forward = ['database', 'force', 'seed', 'step'];
+    protected array $forward = ['database', 'force', 'seed', 'seeder', 'step'];
 }

@@ -8,9 +8,20 @@
 php artisan module:routes
 php artisan module:routes Shop --method=GET
 php artisan module:routes Shop --json
+php artisan module:routes --compact
+php artisan module:routes --columns=uri,middleware --sort=uri --reverse
 ```
 
 A module includes the routes of its children. Ownership survives `route:cache`.
+
+| Option | Description |
+| --- | --- |
+| `--method=` | Only the routes answering this method. |
+| `--compact`, `-c` | Only the module, method, URI and action columns. |
+| `--columns=` | The columns to show: `module`, `domain`, `method`, `uri`, `name`, `action`, `middleware` (repeat it or separate with commas). |
+| `--sort=` | The column to sort by; `module` by default. |
+| `--reverse`, `-r` | Reverse the order. |
+| `--json` | Output JSON, limited to the chosen columns. |
 
 ### Tests
 

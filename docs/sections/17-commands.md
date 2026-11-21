@@ -23,6 +23,6 @@
 | `module:migrate`, `:rollback`, `:status`, `:reset`, `:refresh` | Module migrations (see Database Commands). |
 | `module:seed {module?} {--class=}` | Run a module seeder. |
 | `module:test {module?}` | Run the module tests. |
-| `module:routes {module?} {--method=} {--json}` | The routes modules own. |
+| `module:routes {module?} {--method=} {--compact} {--columns=*} {--sort=} {--reverse} {--json}` | The routes modules own. |
 
 Every command that takes a module accepts a nested identity such as `Commerce/Checkout`, and rejects invalid ones (`..`, lowercase, separators). Commands exit with 0 on success and 1 when they refuse; `module:test` returns the test runner's exit code.
