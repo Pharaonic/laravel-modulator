@@ -18,9 +18,7 @@ final class DisabledList
      * @param  string  $file  config/pharaonic/modulator.php of the application.
      * @param  string  $storage  The application storage directory (for the lock).
      */
-    public function __construct(private string $file, private string $storage)
-    {
-    }
+    public function __construct(private string $file, private string $storage) {}
 
     public function file(): string
     {

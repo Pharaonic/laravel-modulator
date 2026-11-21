@@ -29,8 +29,7 @@ final class DiagnoseModules
         private Manifest $manifest,
         private Autoloader $autoloader,
         private Repository $config
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{registry: ModuleRegistry, diagnostics: list<Diagnostic>}

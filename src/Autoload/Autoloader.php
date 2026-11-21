@@ -24,8 +24,7 @@ final class Autoloader
 {
     public function __construct(
         private string $vendorPath
-    ) {
-    }
+    ) {}
 
     /**
      * The Composer loader of the application's vendor directory, or the first registered one.

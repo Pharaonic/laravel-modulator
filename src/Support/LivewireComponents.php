@@ -11,8 +11,8 @@ use ReflectionClass;
 
 /**
  * Registers the Livewire components of a module, when Livewire is installed:
- * every concrete Livewire\Component under <Module>\Http\Livewire, named
- * "<slug>::<kebab path>" (Modules\Shop\Http\Livewire\Admin\UserTable is
+ * every concrete Livewire\Component under <Module>\Livewire (Livewire 3), named
+ * "<slug>::<kebab path>" (Modules\Shop\Livewire\Admin\UserTable is
  * "shop::admin.user-table"). The classes come from the module class map, so
  * nothing is scanned.
  *
@@ -27,7 +27,7 @@ final class LivewireComponents
      */
     public static function namespace(Module $module): string
     {
-        return $module->namespace().'\\Http\\Livewire\\';
+        return $module->namespace().'\\Livewire\\';
     }
 
     /**

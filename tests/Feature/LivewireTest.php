@@ -13,9 +13,9 @@ class LivewireTest extends TestCase
     {
         $position = strrpos($class, '\\');
         $short = $position === false ? $class : substr($class, $position + 1);
-        $namespace = trim($namespace.'\\Http\\Livewire\\'.($position === false ? '' : substr($class, 0, $position)), '\\');
+        $namespace = trim($namespace.'\\Livewire\\'.($position === false ? '' : substr($class, 0, $position)), '\\');
 
-        $this->write($module.'/app/Http/Livewire/'.str_replace('\\', '/', $class).'.php', <<<PHP
+        $this->write($module.'/app/Livewire/'.str_replace('\\', '/', $class).'.php', <<<PHP
 <?php
 
 namespace {$namespace};
@@ -32,6 +32,18 @@ class {$short} extends Component
 PHP);
     }
 
+    /**
+     * The class registered under a component name, or null.
+     */
+    private function registered(string $name): ?string
+    {
+        try {
+            return app('Livewire\\Mechanisms\\ComponentRegistry')->getClass($name);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     private function render(string $blade): string
     {
         $file = $this->write('resources/views/livewire-probe-'.md5($blade).'.blade.php', $blade);
@@ -45,18 +57,17 @@ PHP);
         $this->livewireComponent('Modules/Shop', 'Modules\\Shop', 'Cart', 'shop cart');
         $this->livewireComponent('Modules/Shop', 'Modules\\Shop', 'Admin\\UserTable', 'user table');
         $this->livewireComponent('Modules/Shop/Modules/Orders', 'Modules\\Shop\\Orders', 'OrderList', 'order list');
-        $this->write('Modules/Shop/app/Http/Livewire/Base.php', '<?php namespace Modules\\Shop\\Http\\Livewire; abstract class Base extends \\Livewire\\Component {}');
-        $this->write('Modules/Shop/app/Http/Livewire/Helper.php', '<?php namespace Modules\\Shop\\Http\\Livewire; class Helper {}');
+        $this->write('Modules/Shop/app/Livewire/Base.php', '<?php namespace Modules\\Shop\\Livewire; abstract class Base extends \\Livewire\\Component {}');
+        $this->write('Modules/Shop/app/Livewire/Helper.php', '<?php namespace Modules\\Shop\\Livewire; class Helper {}');
         $this->reload();
 
         $this->assertStringContainsString('shop cart', $this->render('<livewire:shop::cart />'));
         $this->assertStringContainsString('user table', $this->render("@livewire('shop::admin.user-table')"));
         $this->assertStringContainsString('order list', $this->render('<livewire:shop-orders::order-list />'));
 
-        $aliases = app('livewire')->getComponentAliases();
-        $this->assertSame('Modules\\Shop\\Http\\Livewire\\Cart', $aliases['shop::cart'] ?? null);
-        $this->assertArrayNotHasKey('shop::base', $aliases, 'An abstract class is not a component.');
-        $this->assertArrayNotHasKey('shop::helper', $aliases, 'A class that is not a component is skipped.');
+        $this->assertSame('Modules\\Shop\\Livewire\\Cart', $this->registered('shop::cart'));
+        $this->assertNull($this->registered('shop::base'), 'An abstract class is not a component.');
+        $this->assertNull($this->registered('shop::helper'), 'A class that is not a component is skipped.');
     }
 
     public function test_components_of_a_disabled_module_are_not_registered(): void
@@ -65,7 +76,7 @@ PHP);
         $this->livewireComponent('Modules/Shop', 'Modules\\Shop', 'Cart', 'shop cart');
         $this->reload(['disabled' => ['Shop']]);
 
-        $this->assertArrayNotHasKey('shop::cart', app('livewire')->getComponentAliases());
+        $this->assertNull($this->registered('shop::cart'));
     }
 
     public function test_nothing_is_registered_without_livewire(): void
@@ -74,7 +85,7 @@ PHP);
         $this->reload();
 
         $app = new Application($this->base);
-        LivewireComponents::register($app, Modules::find('Shop'), ['Modules\\Shop\\Http\\Livewire\\Cart']);
+        LivewireComponents::register($app, Modules::find('Shop'), ['Modules\\Shop\\Livewire\\Cart']);
 
         $this->assertFalse($app->bound('livewire'));
     }
@@ -88,14 +99,14 @@ PHP);
         [$status, $output] = $this->command('module:make:livewire', ['module' => 'Shop', 'name' => 'Admin/StockTable', '--test' => true, '--phpunit' => true]);
         $this->assertSame(0, $status, $output);
 
-        $class = (string) file_get_contents($this->base.'/Modules/Shop/app/Http/Livewire/Admin/StockTable.php');
-        $this->assertStringContainsString('namespace Modules\\Shop\\Http\\Livewire\\Admin;', $class);
+        $class = (string) file_get_contents($this->base.'/Modules/Shop/app/Livewire/Admin/StockTable.php');
+        $this->assertStringContainsString('namespace Modules\\Shop\\Livewire\\Admin;', $class);
         $this->assertStringContainsString("view('shop::livewire.admin.stock-table')", $class);
         $this->assertFileExists($this->base.'/Modules/Shop/resources/views/livewire/admin/stock-table.blade.php');
 
-        $test = (string) file_get_contents($this->base.'/Modules/Shop/tests/Feature/Http/Livewire/Admin/StockTableTest.php');
-        $this->assertStringContainsString('namespace Modules\\Shop\\Tests\\Feature\\Http\\Livewire\\Admin;', $test);
-        $this->assertStringContainsString('use Modules\\Shop\\Http\\Livewire\\Admin\\StockTable;', $test);
+        $test = (string) file_get_contents($this->base.'/Modules/Shop/tests/Feature/Livewire/Admin/StockTableTest.php');
+        $this->assertStringContainsString('namespace Modules\\Shop\\Tests\\Feature\\Livewire\\Admin;', $test);
+        $this->assertStringContainsString('use Modules\\Shop\\Livewire\\Admin\\StockTable;', $test);
         $this->assertStringContainsString('Livewire::test(StockTable::class)', $test);
 
         $this->write('Modules/Shop/resources/views/livewire/admin/stock-table.blade.php', '<div>generated table</div>');
@@ -105,9 +116,9 @@ PHP);
         $this->write('vendor/bin/pest', '<?php');
         [$status, $output] = $this->command('module:make:livewire', ['module' => 'Shop', 'name' => 'Counter', '--inline' => true, '--pest' => true]);
         $this->assertSame(0, $status, $output);
-        $this->assertStringContainsString("<<<'blade'", (string) file_get_contents($this->base.'/Modules/Shop/app/Http/Livewire/Counter.php'));
+        $this->assertStringContainsString("<<<'blade'", (string) file_get_contents($this->base.'/Modules/Shop/app/Livewire/Counter.php'));
         $this->assertFileDoesNotExist($this->base.'/Modules/Shop/resources/views/livewire/counter.blade.php');
-        $pest = (string) file_get_contents($this->base.'/Modules/Shop/tests/Feature/Http/Livewire/CounterTest.php');
+        $pest = (string) file_get_contents($this->base.'/Modules/Shop/tests/Feature/Livewire/CounterTest.php');
         $this->assertStringContainsString('uses(Tests\\TestCase::class);', $pest);
         $this->assertStringContainsString('Livewire::test(Counter::class)', $pest);
     }
@@ -122,6 +133,6 @@ PHP);
 
         $this->assertSame(1, $status);
         $this->assertStringContainsString('composer require livewire/livewire', $output);
-        $this->assertFileDoesNotExist($this->base.'/Modules/Shop/app/Http/Livewire/Cart.php');
+        $this->assertFileDoesNotExist($this->base.'/Modules/Shop/app/Livewire/Cart.php');
     }
 }

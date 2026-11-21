@@ -8,7 +8,5 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 // it loads bootstrap/cache/routes.php when routes are cached.
 class RouteServiceProvider extends ServiceProvider
 {
-    public function map()
-    {
-    }
+    public function map() {}
 }

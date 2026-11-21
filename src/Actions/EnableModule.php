@@ -19,13 +19,11 @@ use RuntimeException;
  */
 final class EnableModule
 {
-    public function __construct(private Manifest $manifest, private DisabledList $list)
-    {
-    }
+    public function __construct(private Manifest $manifest, private DisabledList $list) {}
 
     /**
      * @return array{removed: list<string>, also: list<string>, published: bool} The identities
-     *                                                                          removed from the list, the other modules enabled through them, and whether the configuration was published.
+     *                                                                           removed from the list, the other modules enabled through them, and whether the configuration was published.
      *
      * @throws RuntimeException When the module would stay disabled; nothing is changed.
      */

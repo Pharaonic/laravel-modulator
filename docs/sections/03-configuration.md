@@ -30,6 +30,10 @@ return [
         'pool' => 'local',
         'stubs' => null,
     ],
+
+    'vite' => [
+        'entries' => ['resources/css/app.css', 'resources/js/app.js'],
+    ],
 ];
 ```
 
@@ -40,6 +44,7 @@ return [
 | `discovery.cache` | `true` | Keep the discovery result in `bootstrap/cache/modulator.php`. |
 | `generation.pool` | `local` | The pool `module:make` and `module:publish` write to. It must be an application pool with the `app/` layout. |
 | `generation.stubs` | `null` | A directory of stubs that replace the package stubs with the same name. When `null`, `stubs/modulator` is used if it exists. |
+| `vite.entries` | `['resources/css/app.css', 'resources/js/app.js']` | The Vite entry points of a module, relative to it. The ones that exist are listed by `module:vite` and rendered by `@moduleVite('Shop')`. |
 
 :::info
 A pool namespace is the namespace root of its modules: `Modules/Shop/app/Models/Product.php` in the `local` pool is `Modules\Shop\Models\Product`. `app/` never appears in the namespace.

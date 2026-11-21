@@ -27,8 +27,7 @@ final class PoolResolver
     public function __construct(
         private Container $container,
         private string $vendorPath
-    ) {
-    }
+    ) {}
 
     /**
      * @param  mixed  $config  The `pharaonic.modulator.pools` value.

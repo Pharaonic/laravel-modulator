@@ -43,8 +43,7 @@ final class MakeModule
         private Manifest $manifest,
         private ModuleRegistry $registry,
         private Repository $config
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{path: string, namespace: string}

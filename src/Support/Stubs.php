@@ -16,9 +16,7 @@ use RuntimeException;
  */
 final class Stubs
 {
-    public function __construct(private ?string $custom = null)
-    {
-    }
+    public function __construct(private ?string $custom = null) {}
 
     /**
      * @param  mixed  $custom  The `generation.stubs` value.

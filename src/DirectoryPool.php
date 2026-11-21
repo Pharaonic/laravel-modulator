@@ -21,8 +21,7 @@ final class DirectoryPool implements Pool
         private int $priority = 0,
         private ?string $package = null,
         private bool $legacy = false
-    ) {
-    }
+    ) {}
 
     public function name(): string
     {

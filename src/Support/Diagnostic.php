@@ -22,8 +22,7 @@ final class Diagnostic
         public string $level,
         public string $message,
         public ?string $module = null
-    ) {
-    }
+    ) {}
 
     public static function error(string $message, ?string $module = null): self
     {

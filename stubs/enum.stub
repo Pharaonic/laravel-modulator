@@ -1,0 +1,12 @@
+<?php
+
+namespace {{ namespace }};
+
+use Pharaonic\SmartEnum\SmartEnum;
+
+enum {{ class }}
+{
+    use SmartEnum;
+
+    //
+}

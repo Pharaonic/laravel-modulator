@@ -31,8 +31,7 @@ final class Source
         public bool $legacy = false,
         public array $dependencies = [],
         public array $exposes = []
-    ) {
-    }
+    ) {}
 
     /**
      * The directory holding the module classes: app/ (legacy modules: the module root).

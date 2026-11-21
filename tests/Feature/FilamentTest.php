@@ -27,7 +27,7 @@ use Filament\\Pages\\Page;
 
 class Reports extends Page
 {
-    protected static string \$view = 'filament::pages.dashboard';
+    protected static string \$view = 'filament-panels::pages.dashboard';
 }
 PHP);
         $this->write('Modules/'.$module.'/app/Filament/Widgets/Sales.php', <<<PHP
@@ -39,7 +39,19 @@ use Filament\\Widgets\\Widget;
 
 class Sales extends Widget
 {
-    protected static string \$view = 'filament::widgets.account-widget';
+    protected static string \$view = 'filament-panels::widgets.account-widget';
+}
+PHP);
+        $this->write('Modules/'.$module.'/app/Filament/App/Pages/Inbox.php', <<<PHP
+<?php
+
+namespace Modules\\{$module}\\Filament\\App\\Pages;
+
+use Filament\\Pages\\Page;
+
+class Inbox extends Page
+{
+    protected static string \$view = 'filament-panels::pages.dashboard';
 }
 PHP);
         $this->write('Modules/'.$module.'/app/Filament/Pages/Base.php', "<?php namespace Modules\\{$module}\\Filament\\Pages; abstract class Base extends \\Filament\\Pages\\Page {}");
@@ -50,38 +62,41 @@ PHP);
         $this->reload();
     }
 
-    public function test_module_resources_pages_and_widgets_are_registered(): void
+    public function test_module_classes_join_the_panel_of_their_directory(): void
     {
-        $this->requiresPackage('Filament\\Resources\\Resource', 'filament/filament');
+        $this->requiresPackage('Filament\\Panel', 'filament/filament');
         $this->shop();
 
-        $this->assertContains('Modules\\Shop\\Filament\\Resources\\ProductResource', Filament::getResources());
-        $this->assertContains('Modules\\Shop\\Filament\\Pages\\Reports', Filament::getPages());
-        $this->assertNotContains('Modules\\Shop\\Filament\\Pages\\Base', Filament::getPages(), 'An abstract page is skipped.');
-        $this->assertNotContains('Modules\\Shop\\Filament\\Resources\\ProductResource\\Pages\\ListProducts', Filament::getPages(), 'Resource pages are not standalone pages.');
-        $this->assertContains('Modules\\Shop\\Filament\\Widgets\\Sales', Filament::getWidgets());
+        $admin = Filament::getPanel('admin');
+        $this->assertContains('Modules\\Shop\\Filament\\Resources\\ProductResource', $admin->getResources());
+        $this->assertContains('Modules\\Shop\\Filament\\Pages\\Reports', $admin->getPages());
+        $this->assertNotContains('Modules\\Shop\\Filament\\Pages\\Base', $admin->getPages(), 'An abstract page is skipped.');
+        $this->assertNotContains('Modules\\Shop\\Filament\\Resources\\ProductResource\\Pages\\ListProducts', $admin->getPages(), 'Resource pages are not standalone pages.');
+        $this->assertContains('Modules\\Shop\\Filament\\Widgets\\Sales', $admin->getWidgets());
+        $this->assertNotContains('Modules\\Shop\\Filament\\App\\Pages\\Inbox', $admin->getPages(), 'Filament/App is the "app" panel\'s.');
 
-        $aliases = app('livewire')->getComponentAliases();
-        $this->assertContains('Modules\\Shop\\Filament\\Resources\\ProductResource\\Pages\\ListProducts', $aliases);
-        $this->assertContains('Modules\\Shop\\Filament\\Resources\\ProductResource\\Pages\\EditProduct', $aliases);
-        $this->assertContains('Modules\\Shop\\Filament\\Pages\\Reports', $aliases);
-        $this->assertContains('Modules\\Shop\\Filament\\Widgets\\Sales', $aliases);
+        $app = Filament::getPanel('app');
+        $this->assertContains('Modules\\Shop\\Filament\\App\\Pages\\Inbox', $app->getPages());
+        $this->assertNotContains('Modules\\Shop\\Filament\\Pages\\Reports', $app->getPages(), 'Filament/Pages is the default panel\'s.');
+        $this->assertNotContains('Modules\\Shop\\Filament\\Resources\\ProductResource', $app->getResources());
 
         $routes = array_map(static function ($route): string {
             return (string) $route->getName();
         }, Route::getRoutes()->getRoutes());
-        $this->assertContains('filament.resources.products.index', $routes, 'The resource routes exist: Filament saw the resource before building them.');
-        $this->assertContains('filament.resources.products.edit', $routes);
+        $this->assertContains('filament.admin.resources.products.index', $routes, 'The resource routes exist: the panel had the resource before building them.');
+        $this->assertContains('filament.admin.resources.products.edit', $routes);
+        $this->assertContains('filament.admin.pages.reports', $routes);
+        $this->assertContains('filament.app.pages.inbox', $routes);
     }
 
     public function test_a_disabled_module_registers_nothing(): void
     {
-        $this->requiresPackage('Filament\\Resources\\Resource', 'filament/filament');
+        $this->requiresPackage('Filament\\Panel', 'filament/filament');
         $this->shop();
         $this->reload(['disabled' => ['Shop']]);
 
-        $this->assertNotContains('Modules\\Shop\\Filament\\Resources\\ProductResource', Filament::getResources());
-        $this->assertNotContains('Modules\\Shop\\Filament\\Pages\\Reports', Filament::getPages());
+        $this->assertNotContains('Modules\\Shop\\Filament\\Resources\\ProductResource', Filament::getPanel('admin')->getResources());
+        $this->assertNotContains('Modules\\Shop\\Filament\\App\\Pages\\Inbox', Filament::getPanel('app')->getPages());
     }
 
     public function test_nothing_is_registered_without_filament(): void
@@ -91,7 +106,6 @@ PHP);
 
         $app = new Application($this->base);
         FilamentComponents::register($app, Modules::find('Shop'), ['Modules\\Shop\\Filament\\Resources\\ProductResource']);
-        FilamentComponents::boot($app, Modules::find('Shop'), ['Modules\\Shop\\Filament\\Resources\\ProductResource']);
 
         $this->assertFalse($app->bound('filament'));
     }
@@ -109,6 +123,10 @@ PHP);
         $this->assertStringContainsString('protected static ?string $model = Post::class;', $resource);
         $this->assertStringContainsString("'index' => Pages\\ListPosts::route('/'),", $resource);
         $this->assertStringContainsString('public static function getRelations(): array', $resource);
+        $this->assertStringContainsString('use Filament\\Forms\\Form;', $resource, 'Filament 3 forms.');
+        $this->assertStringContainsString('use Filament\\Tables\\Table;', $resource);
+        $this->assertStringContainsString('Tables\\Actions\\BulkActionGroup::make([', $resource);
+        $this->assertStringContainsString('protected function getHeaderActions(): array', (string) file_get_contents($this->base.'/Modules/Blog/app/Filament/Resources/PostResource/Pages/EditPost.php'));
 
         foreach (['ListPosts', 'CreatePost', 'EditPost'] as $page) {
             $contents = (string) file_get_contents($this->base.'/Modules/Blog/app/Filament/Resources/PostResource/Pages/'.$page.'.php');

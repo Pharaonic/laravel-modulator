@@ -23,8 +23,7 @@ final class Module
         private ?string $disabledReason,
         private ?string $parent,
         private array $children
-    ) {
-    }
+    ) {}
 
     /**
      * The identity, e.g. "Shop" or "Commerce/Checkout".

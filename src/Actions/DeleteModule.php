@@ -23,12 +23,11 @@ final class DeleteModule
         private Application $app,
         private Manifest $manifest,
         private ModuleRegistry $registry
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{id: string, path: string, children: list<string>, replaced: bool, disabled: bool} The
-     *                                                                                                   module path, the child modules deleted with it, whether another source takes over, and whether it stays listed as disabled.
+     *                                                                                                 module path, the child modules deleted with it, whether another source takes over, and whether it stays listed as disabled.
      *
      * @throws RuntimeException When the module must not be deleted.
      */

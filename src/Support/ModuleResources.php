@@ -24,8 +24,9 @@ use ReflectionClass;
  * - routes/web.php ("web" middleware) and routes/api.php ("api" middleware, "api" prefix),
  *   each route tagged with the module identity in its action ("module").
  *
- * - with Livewire installed, the components of app/Http/Livewire ("<slug>::<name>");
- * - with Filament installed, the resources, pages and widgets of app/Filament;
+ * - with Livewire installed, the components of app/Livewire ("<slug>::<name>");
+ * - with Filament installed, the resources, pages and widgets of app/Filament, in their panels;
+ * - with laravel-executor installed, the executors of executors/;
  * - in the console, the commands of app/Console/Commands and routes/console.php;
  * - on Laravel 6 and 7, the closure factories of database/factories.
  *
@@ -94,7 +95,7 @@ final class ModuleResources extends ServiceProvider
 
         $this->loadClosureFactories();
         LivewireComponents::register($this->app, $this->module, $this->classes);
-        FilamentComponents::boot($this->app, $this->module, $this->classes);
+        ExecutorPaths::register($this->app, $this->module);
 
         if ($legacy) {
             $this->bootLegacyConsole();
