@@ -52,7 +52,11 @@ abstract class TestCase extends Orchestra
 
     protected function getPackageProviders($app)
     {
-        return [ModulatorServiceProvider::class];
+        // Livewire is optional: registered first when installed, as an application would.
+        return array_merge(
+            class_exists('Livewire\\LivewireServiceProvider') ? ['Livewire\\LivewireServiceProvider'] : [],
+            [ModulatorServiceProvider::class]
+        );
     }
 
     protected function resolveApplicationConfiguration($app)
