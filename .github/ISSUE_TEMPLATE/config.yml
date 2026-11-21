@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: "https://pharaonic.dev/packages/laravel/modulator"
+    about: Check the documentation before opening an issue.
+  - name: Security vulnerability
+    url: "https://github.com/Pharaonic/laravel-modulator/security"
+    about: Do not report security vulnerabilities in public issues.
