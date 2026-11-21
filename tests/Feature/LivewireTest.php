@@ -41,6 +41,7 @@ PHP);
 
     public function test_module_components_are_registered_under_the_module_slug(): void
     {
+        $this->requiresPackage('Livewire\\Component', 'livewire/livewire');
         $this->component('Modules/Shop', 'Modules\\Shop', 'Cart', 'shop cart');
         $this->component('Modules/Shop', 'Modules\\Shop', 'Admin\\UserTable', 'user table');
         $this->component('Modules/Shop/Modules/Orders', 'Modules\\Shop\\Orders', 'OrderList', 'order list');
@@ -60,6 +61,7 @@ PHP);
 
     public function test_components_of_a_disabled_module_are_not_registered(): void
     {
+        $this->requiresPackage('Livewire\\Component', 'livewire/livewire');
         $this->component('Modules/Shop', 'Modules\\Shop', 'Cart', 'shop cart');
         $this->reload(['disabled' => ['Shop']]);
 
@@ -79,6 +81,7 @@ PHP);
 
     public function test_the_generator_writes_a_registered_component_its_view_and_its_test(): void
     {
+        $this->requiresPackage('Livewire\\Component', 'livewire/livewire');
         $this->directory('Modules/Shop/app');
         $this->reload();
 
@@ -107,5 +110,18 @@ PHP);
         $pest = (string) file_get_contents($this->base.'/Modules/Shop/tests/Feature/Http/Livewire/CounterTest.php');
         $this->assertStringContainsString('uses(Tests\\TestCase::class);', $pest);
         $this->assertStringContainsString('Livewire::test(Counter::class)', $pest);
+    }
+
+    public function test_without_livewire_the_generator_refuses_and_writes_nothing(): void
+    {
+        $this->withoutPackage('Livewire\\Component', 'livewire/livewire');
+        $this->directory('Modules/Shop/app');
+        $this->reload();
+
+        [$status, $output] = $this->command('module:make:livewire', ['module' => 'Shop', 'name' => 'Cart']);
+
+        $this->assertSame(1, $status);
+        $this->assertStringContainsString('composer require livewire/livewire', $output);
+        $this->assertFileDoesNotExist($this->base.'/Modules/Shop/app/Http/Livewire/Cart.php');
     }
 }
