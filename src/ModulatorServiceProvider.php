@@ -111,8 +111,10 @@ final class ModulatorServiceProvider extends ServiceProvider
             // Make
             Console\Make\ActionMakeCommand::class,
             Console\Make\CacheTableCommand::class,
+            Console\Make\CastMakeCommand::class,
             Console\Make\ChannelMakeCommand::class,
             Console\Make\ClassMakeCommand::class,
+            Console\Make\ComponentMakeCommand::class,
             Console\Make\ConfigMakeCommand::class,
             Console\Make\ConsoleMakeCommand::class,
             Console\Make\ControllerMakeCommand::class,

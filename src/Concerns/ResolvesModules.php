@@ -70,7 +70,7 @@ trait ResolvesModules
         if ($trusted && $ids !== []) {
             $choice = $this->choice('Which module?', $ids);
 
-            return $registry->find($choice);
+            return is_string($choice) ? $registry->find($choice) : null;
         }
 
         $this->error($ids === []

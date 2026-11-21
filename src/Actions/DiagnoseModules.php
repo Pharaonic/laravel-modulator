@@ -6,6 +6,7 @@ namespace Pharaonic\Laravel\Modulator\Actions;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Foundation\Application as FoundationApplication;
 use Illuminate\Support\ServiceProvider;
 use Pharaonic\Laravel\Modulator\Autoload\Autoloader;
 use Pharaonic\Laravel\Modulator\Discovery\Manifest;
@@ -210,7 +211,7 @@ final class DiagnoseModules
         $file = $this->app->configPath('pharaonic'.DIRECTORY_SEPARATOR.'modulator.php');
         $cached = $this->app->bootstrapPath('cache'.DIRECTORY_SEPARATOR.'config.php');
 
-        if ($this->app->configurationIsCached() && is_file($file) && is_file($cached) && filemtime($file) > filemtime($cached)) {
+        if ($this->app instanceof FoundationApplication && $this->app->configurationIsCached() && is_file($file) && is_file($cached) && filemtime($file) > filemtime($cached)) {
             return [Diagnostic::warning('config/pharaonic/modulator.php changed after "config:cache": the application still uses the cached module states. Run "php artisan config:cache".')];
         }
 

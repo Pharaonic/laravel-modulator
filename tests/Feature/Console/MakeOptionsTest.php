@@ -37,7 +37,7 @@ class MakeOptionsTest extends TestCase
 
     public function test_every_laravel_make_command_has_a_module_command(): void
     {
-        $laravel = ['cache-table', 'channel', 'class', 'command', 'config', 'controller', 'event', 'exception', 'factory', 'interface', 'job', 'job-middleware', 'listener', 'mail', 'middleware', 'migration', 'model', 'notification', 'notifications-table', 'observer', 'policy', 'provider', 'queue-failed-table', 'queue-table', 'request', 'resource', 'rule', 'scope', 'seeder', 'session-table', 'test', 'trait', 'view'];
+        $laravel = ['cache-table', 'cast', 'channel', 'class', 'command', 'component', 'config', 'controller', 'event', 'exception', 'factory', 'interface', 'job', 'job-middleware', 'listener', 'mail', 'middleware', 'migration', 'model', 'notification', 'notifications-table', 'observer', 'policy', 'provider', 'queue-failed-table', 'queue-table', 'request', 'resource', 'rule', 'scope', 'seeder', 'session-table', 'test', 'trait', 'view'];
         $commands = Artisan::all();
 
         foreach ($laravel as $type) {
@@ -81,7 +81,14 @@ class MakeOptionsTest extends TestCase
         $this->write('vendor/bin/pest', '<?php');
 
         $this->make('test', ['name' => 'PriceTest']);
-        $this->assertStringContainsString("test('example'", $this->file('tests/Feature/PriceTest.php'));
+        $feature = $this->file('tests/Feature/PriceTest.php');
+        $this->assertStringContainsString("test('example'", $feature);
+        $this->assertStringContainsString('uses(Tests\\TestCase::class);', $feature, 'A module feature test is outside tests/, so it binds the TestCase itself.');
+
+        $this->make('test', ['name' => 'MathTest', '--unit' => true]);
+        $unit = $this->file('tests/Unit/MathTest.php');
+        $this->assertStringContainsString("test('example'", $unit);
+        $this->assertStringNotContainsString('uses(', $unit);
 
         $this->make('test', ['name' => 'StockTest', '--phpunit' => true]);
         $this->assertStringContainsString('extends TestCase', $this->file('tests/Feature/StockTest.php'));
@@ -174,7 +181,11 @@ class MakeOptionsTest extends TestCase
 
         $this->make('view', ['name' => 'products.index', '--test' => true]);
         $this->assertFileExists($this->base.'/Modules/Shop/resources/views/products/index.blade.php');
-        $this->assertStringContainsString("view('shop::products.index'", $this->file('tests/Feature/View/ProductsIndexTest.php'));
+        $test = $this->file('tests/Feature/View/ProductsIndexTest.php');
+        $this->assertStringContainsString("view('shop::products.index'", $test);
+        // $this->view() (InteractsWithViews) only exists from Laravel 8: the test renders through view() on every line.
+        $this->assertStringNotContainsString('$this->view(', $test);
+        $this->assertStringContainsString('->render()', $test);
 
         $this->make('view', ['name' => 'emails/plain', '--extension' => 'txt']);
         $this->assertFileExists($this->base.'/Modules/Shop/resources/views/emails/plain.txt');
@@ -183,6 +194,52 @@ class MakeOptionsTest extends TestCase
         $this->assertSame(1, $this->command('module:make:config', ['module' => 'Shop', 'name' => '../escape'])[0]);
         $this->make('config', ['name' => 'billing']);
         $this->assertStringContainsString("config('modules.shop.billing')", $this->file('config/billing.php'));
+    }
+
+    public function test_casts_work_on_a_module_model(): void
+    {
+        $this->make('cast', ['name' => 'Upper']);
+        $this->make('cast', ['name' => 'Trimmed', '--inbound' => true]);
+        $this->assertStringContainsString('implements CastsInboundAttributes', $this->file('app/Casts/Trimmed.php'));
+
+        $cast = str_replace('return $value;', 'return strtoupper((string) $value);', $this->file('app/Casts/Upper.php'));
+        $this->write('Modules/Shop/app/Casts/Upper.php', $cast);
+        $this->write('Modules/Shop/app/Models/Label.php', <<<'PHP'
+<?php
+
+namespace Modules\Shop\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Modules\Shop\Casts\Upper;
+
+class Label extends Model
+{
+    protected $casts = ['name' => Upper::class];
+}
+PHP);
+        $this->reload();
+
+        $label = new \Modules\Shop\Models\Label();
+        $label->name = 'sale';
+        $this->assertSame('SALE', $label->name);
+    }
+
+    public function test_components_render_from_the_module(): void
+    {
+        $this->make('component', ['name' => 'Alert', '--view' => true]);
+        $this->assertFileExists($this->base.'/Modules/Shop/resources/views/components/alert.blade.php');
+        $this->assertDirectoryDoesNotExist($this->base.'/Modules/Shop/app/View');
+
+        $this->make('component', ['name' => 'Badge', '--inline' => true]);
+        $this->assertStringContainsString("<<<'blade'", $this->file('app/View/Components/Badge.php'));
+
+        $this->make('component', ['name' => 'Forms/Input']);
+        $this->assertFileExists($this->base.'/Modules/Shop/resources/views/components/forms/input.blade.php');
+        $this->write('Modules/Shop/resources/views/components/forms/input.blade.php', '<input name="shop">');
+        $this->reload();
+
+        $class = 'Modules\\Shop\\View\\Components\\Forms\\Input';
+        $this->assertSame('<input name="shop">', trim((string) (new $class())->render()->render()));
     }
 
     public function test_table_migrations_match_the_framework_tables(): void

@@ -1,0 +1,22 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\View\Component;
+
+class {{ class }} extends Component
+{
+    /**
+     * Get the view that represents the component.
+     *
+     * @return string
+     */
+    public function render()
+    {
+        return <<<'blade'
+<div>
+    <!-- {{ class }} component of the {{ module }} module -->
+</div>
+blade;
+    }
+}
