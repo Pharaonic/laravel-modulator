@@ -7,6 +7,7 @@ All notable changes to this project are documented here.
 ### Added
 
 - `module:make:cast` (with `--inbound`) and `module:make:component` (`--inline`, `--view`, `--path=`), which need Laravel 7.
+- Optional Livewire 2 integration: with `livewire/livewire` installed, the components in a module's `app/Http/Livewire` are registered as `<slug>::<name>` (`<livewire:shop::cart />`), and `module:make:livewire` (`--inline`, tests) writes one. Livewire is not required.
 
 ### Changed
 
