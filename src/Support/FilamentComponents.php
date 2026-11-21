@@ -10,8 +10,8 @@ use Pharaonic\Laravel\Modulator\Module;
 use ReflectionClass;
 
 /**
- * Adds the Filament 3 resources, pages and widgets of a module to the
- * panels, when Filament is installed, by directory, as Filament lays out an
+ * Adds the Filament resources, pages and widgets of a module to the panels,
+ * when Filament is installed, by directory, as Filament lays out an
  * application:
  *
  * - <Module>\Filament\{Resources,Pages,Widgets} join the default panel;
@@ -20,13 +20,16 @@ use ReflectionClass;
  *
  * The classes are added through Panel::configureUsing(), which a panel runs
  * when it gets its id, before it registers its routes and Livewire
- * components. They come from the module class map, so nothing is scanned.
+ * components. Filament 3 gets the classes directly in each folder, from the
+ * module class map; Filament 4 and 5 discover the folders themselves.
  *
  * @internal
  */
 final class FilamentComponents
 {
     public const PANEL = 'Filament\\Panel';
+
+    public const SCHEMA = 'Filament\\Schemas\\Schema';
 
     /**
      * @param  list<string>  $classes  The module classes (from the manifest class map).
@@ -47,12 +50,43 @@ final class FilamentComponents
             $id = $panel->getId();
             $directory = $panel->isDefault() ? '' : Str::studly(is_string($id) ? $id : '').'\\';
 
+            // Filament 4 and 5 discover the module folders the way they discover
+            // the application's: nested resource folders included, and
+            // make:filament-resource can write into them.
+            if (self::discovers()) {
+                foreach (['Resources' => 'discoverResources', 'Pages' => 'discoverPages', 'Widgets' => 'discoverWidgets'] as $kind => $method) {
+                    if (method_exists($panel, $method)) {
+                        $panel->{$method}(self::path($module, $directory.$kind), $module->namespace().'\\Filament\\'.$directory.$kind);
+                    }
+                }
+
+                return;
+            }
+
             foreach (self::classes($module, $classes, $directory) as $method => $found) {
                 if ($found !== [] && method_exists($panel, $method)) {
                     $panel->{$method}($found);
                 }
             }
         });
+    }
+
+    /**
+     * Whether the installed Filament discovers module folders (Filament 4 and
+     * later, whose schemas live in filament/schemas) instead of taking the
+     * class lists Filament 3 gets.
+     */
+    public static function discovers(): bool
+    {
+        return class_exists(self::SCHEMA);
+    }
+
+    /**
+     * The folder of <Module>\Filament\<directory>, e.g. "App\Resources".
+     */
+    public static function path(Module $module, string $directory): string
+    {
+        return $module->source()->classPath().DIRECTORY_SEPARATOR.'Filament'.DIRECTORY_SEPARATOR.str_replace('\\', DIRECTORY_SEPARATOR, $directory);
     }
 
     /**

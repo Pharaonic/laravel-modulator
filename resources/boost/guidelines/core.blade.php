@@ -35,4 +35,4 @@ $shop->path('routes/web.php');
 </code-snippet>
 @endverbatim
 
-- Integrations, each only when its package is installed: Livewire 3 or 4 components in `app/Livewire` (`<livewire:shop::cart />`), Filament 3 classes in `app/Filament` (default panel) or `app/Filament/<PanelId>`, laravel-executor executors in `executors/`, and Vite entries through `module:vite` and `@moduleVite('Shop')`.
+- Integrations, each only when its package is installed: Livewire 3 or 4 components in `app/Livewire` (`<livewire:shop::cart />`), Filament 3, 4 or 5 classes in `app/Filament` (default panel) or `app/Filament/<PanelId>`, laravel-executor executors in `executors/`, and Vite entries through `module:vite` and `@moduleVite('Shop')`.

@@ -78,7 +78,7 @@ With `livewire/livewire` installed (Livewire 3 or 4), the components in a module
 
 ### Filament Resources, Pages And Widgets
 
-With `filament/filament` installed (Filament 3), a module's Filament classes join your panels on their own, by directory, the way Filament lays out an application:
+With `filament/filament` installed (Filament 3, 4 or 5), a module's Filament classes join your panels on their own, by directory, the way Filament lays out an application:
 
 | Directory | Joins |
 | --- | --- |
@@ -88,11 +88,11 @@ With `filament/filament` installed (Filament 3), a module's Filament classes joi
 Nothing goes in your panel providers. The resources' own pages, relation managers and widgets come with them.
 
 - Only enabled modules add classes; abstract classes, and classes that are not a resource, page or widget, are skipped.
-- Only classes directly in each directory count: `Resources/ProductResource/Pages/*` are the resource's pages, not standalone pages.
+- Filament 3: only classes directly in each directory count, so `Resources/ProductResource/Pages/*` are the resource's pages, not standalone pages.
+- Filament 4 and 5: the panel discovers the module folders the way it discovers the application's, nested resource folders included (`Resources/Products/ProductResource.php`).
 - A panel is the default one when `->default()` comes before `->id()` in its provider, as in the provider Filament generates.
 - After `php artisan filament:cache-components`, panels use the cache: run it again when module classes change.
-- Create a resource with `module:make:filament-resource` (see Generators).
-- Filament 3 only for now: install `filament/filament:^3.3`. Filament 4 and 5 are not supported yet.
+- Create a resource with `module:make:filament-resource` (see Generators), `--panel=app` for another panel. On Filament 4 and 5 it runs Filament's own `make:filament-resource` into the module folder, so the resource has that release's layout (`Schemas/`, `Tables/`, `Pages/`).
 
 ### Executors
 
