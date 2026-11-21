@@ -27,8 +27,9 @@ There is a `module:make:*` command for every `make:*` command of Laravel.
 | `module:make:event` | `app/Events` | |
 | `module:make:exception` | `app/Exceptions` | `--render`, `--report` |
 | `module:make:factory` | `database/factories` | `--model=` |
+| `module:make:filament-resource` | `app/Filament/Resources` + its pages | `--model=`, `--simple`, `--view`, `--soft-deletes`, `--generate`; needs `filament/filament` |
 | `module:make:interface` | `app/Contracts` | |
-| `module:make:job` | `app/Jobs` | `--sync`, tests |
+| `module:make:job` | `app/Jobs` | `--sync`, `--batched`, tests |
 | `module:make:job-middleware` | `app/Jobs/Middleware` | tests |
 | `module:make:listener` | `app/Listeners` | `--event=`, `--queued`, tests |
 | `module:make:livewire` | `app/Http/Livewire` + `resources/views/livewire` | `--inline`, tests (`Livewire::test`); needs `livewire/livewire` |
@@ -56,8 +57,9 @@ There is a `module:make:*` command for every `make:*` command of Laravel.
 
 | Command | Table |
 | --- | --- |
-| `module:make:cache-table` | `cache` |
+| `module:make:cache-table` | `cache`, `cache_locks` |
 | `module:make:notifications-table` | `notifications` |
+| `module:make:queue-batches-table` | `job_batches` |
 | `module:make:queue-failed-table` | `failed_jobs` |
 | `module:make:queue-table` | `jobs` |
 | `module:make:session-table` | `sessions` |
@@ -104,4 +106,4 @@ Tokens: `{{ namespace }}`, `{{ class }}`, `{{ module }}`, `{{ slug }}`, `{{ root
 
 ### Factories
 
-Module models use their module factories with `HasFactory` (Laravel 8+): `Modules\Shop\Models\Product` uses `Modules\Shop\Database\Factories\ProductFactory`. On Laravel 7, module `database/factories` closures are loaded.
+Module models use their module factories with `HasFactory`: `Modules\Shop\Models\Product` uses `Modules\Shop\Database\Factories\ProductFactory`.
