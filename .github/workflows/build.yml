@@ -95,9 +95,18 @@ jobs:
   # The optional integrations (composer.json "suggest") are never in
   # require-dev: installed here, on the runner only, so their tests run.
   integrations:
-    name: PHP ${{ needs.matrix.outputs.lowest }} - optional integrations
+    name: PHP ${{ needs.matrix.outputs.lowest }} - optional integrations ${{ matrix.packages }}
     needs: matrix
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Empty: every suggested package. Otherwise only the given packages,
+        # for a major the suggested set cannot install together.
+        packages:
+          - ""
+          - "livewire/livewire:^4.0"
 
     steps:
       - name: Checkout
@@ -114,7 +123,8 @@ jobs:
       - name: Install the suggested packages
         shell: bash
         run: |
-          packages="$(jq -r '.suggest // {} | keys | join(" ")' composer.json)"
+          packages="${{ matrix.packages }}"
+          [ -n "$packages" ] || packages="$(jq -r '.suggest // {} | keys | join(" ")' composer.json)"
           [ -n "$packages" ] || exit 0
 
           # The majors this line integrates with: Livewire 3 and Filament 3
