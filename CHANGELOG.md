@@ -9,7 +9,7 @@ All notable changes to this project are documented here.
 - Supports Laravel 13.0 and newer within 13.x, on PHP 8.3, 8.4 and 8.5.
 - Same features and behavior as 12.0.0.
 
-## 12.0.0 - Unreleased
+## 12.0.0 - 2026-11-21
 
 ### Compatibility
 
