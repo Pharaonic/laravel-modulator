@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## 11.0.0 - Unreleased
+
+### Fixed
+
+- On Laravel 11, every enabled module loads its resources (views, translations, migrations, routes, commands, Livewire components and executors). Laravel 11 keeps one provider per class, so the per-module resource providers are now registered and booted by Modulator itself, before every provider and in module order.
+
+### Compatibility
+
+- Supports Laravel 11.0 and newer within 11.x, on PHP 8.2, 8.3 and 8.4.
+- Same features and behavior as 10.0.0.
+- The Livewire and Filament integrations support Livewire 3 and Filament 3, which Laravel 11 applications can install (`livewire/livewire:^3.6`, `filament/filament:^3.3`). Livewire 4 and Filament 4 and 5 are not supported yet.
+
 ## 10.0.0 - 2026-11-21
 
 ### Added
