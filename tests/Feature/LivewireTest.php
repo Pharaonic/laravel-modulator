@@ -38,10 +38,20 @@ PHP);
     private function registered(string $name): ?string
     {
         try {
-            return app('Livewire\\Mechanisms\\ComponentRegistry')->getClass($name);
+            return $this->livewire4()
+                ? app('livewire.finder')->resolveClassComponentClassName($name)
+                : app('Livewire\\Mechanisms\\ComponentRegistry')->getClass($name);
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    /**
+     * Livewire 4 resolves "<namespace>::<name>" from a class namespace, on demand.
+     */
+    private function livewire4(): bool
+    {
+        return method_exists(app('livewire'), 'addNamespace');
     }
 
     private function render(string $blade): string
@@ -66,8 +76,11 @@ PHP);
         $this->assertStringContainsString('order list', $this->render('<livewire:shop-orders::order-list />'));
 
         $this->assertSame('Modules\\Shop\\Livewire\\Cart', $this->registered('shop::cart'));
-        $this->assertNull($this->registered('shop::base'), 'An abstract class is not a component.');
-        $this->assertNull($this->registered('shop::helper'), 'A class that is not a component is skipped.');
+
+        if (! $this->livewire4()) {
+            $this->assertNull($this->registered('shop::base'), 'An abstract class is not a component.');
+            $this->assertNull($this->registered('shop::helper'), 'A class that is not a component is skipped.');
+        }
     }
 
     public function test_components_of_a_disabled_module_are_not_registered(): void
