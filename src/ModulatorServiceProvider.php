@@ -136,6 +136,7 @@ final class ModulatorServiceProvider extends ServiceProvider
             Console\Make\ObserverMakeCommand::class,
             Console\Make\PolicyMakeCommand::class,
             Console\Make\ProviderMakeCommand::class,
+            Console\Make\QueueBatchesTableCommand::class,
             Console\Make\QueueFailedTableCommand::class,
             Console\Make\QueueTableCommand::class,
             Console\Make\RequestMakeCommand::class,
