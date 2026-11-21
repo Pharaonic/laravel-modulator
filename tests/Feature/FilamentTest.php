@@ -5,6 +5,7 @@ namespace Pharaonic\Laravel\Modulator\Tests\Feature;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Pharaonic\Laravel\Modulator\Facades\Modules;
 use Pharaonic\Laravel\Modulator\Support\FilamentComponents;
 use Pharaonic\Laravel\Modulator\Tests\TestCase;
@@ -12,10 +13,38 @@ use Pharaonic\Laravel\Modulator\Tests\TestCase;
 class FilamentTest extends TestCase
 {
     /**
+     * Filament 4 and later: folders discovered, resources written by Filament's own command.
+     */
+    private function discovers(): bool
+    {
+        return FilamentComponents::discovers();
+    }
+
+    /**
+     * The resource the generator writes for a module model, and its list page.
+     *
+     * @return array{0: string, 1: string}
+     */
+    private function resource(string $module, string $model): array
+    {
+        $plural = Str::pluralStudly($model);
+        $resources = "Modules\\{$module}\\Filament\\Resources";
+
+        // Filament 4 and later: Resources/Products/ProductResource, its pages beside it.
+        if ($this->discovers()) {
+            return ["{$resources}\\{$plural}\\{$model}Resource", "{$resources}\\{$plural}\\Pages\\List{$plural}"];
+        }
+
+        return ["{$resources}\\{$model}Resource", "{$resources}\\{$model}Resource\\Pages\\List{$plural}"];
+    }
+
+    /**
      * A module with a resource (and its pages), a page and a widget, written by the generator.
      */
     private function shop(string $module = 'Shop', string $model = 'Product'): void
     {
+        // Filament 3 declares the view static; Filament 4 and later do not.
+        $view = $this->discovers() ? 'protected string' : 'protected static string';
         $this->directory('Modules/'.$module.'/app');
         $this->write('Modules/'.$module.'/app/Models/'.$model.'.php', "<?php namespace Modules\\{$module}\\Models; class {$model} extends \\Illuminate\\Database\\Eloquent\\Model {}");
         $this->write('Modules/'.$module.'/app/Filament/Pages/Reports.php', <<<PHP
@@ -27,7 +56,7 @@ use Filament\\Pages\\Page;
 
 class Reports extends Page
 {
-    protected static string \$view = 'filament-panels::pages.dashboard';
+    {$view} \$view = 'filament-panels::pages.dashboard';
 }
 PHP);
         $this->write('Modules/'.$module.'/app/Filament/Widgets/Sales.php', <<<PHP
@@ -39,7 +68,7 @@ use Filament\\Widgets\\Widget;
 
 class Sales extends Widget
 {
-    protected static string \$view = 'filament-panels::widgets.account-widget';
+    {$view} \$view = 'filament-panels::widgets.account-widget';
 }
 PHP);
         $this->write('Modules/'.$module.'/app/Filament/App/Pages/Inbox.php', <<<PHP
@@ -51,7 +80,7 @@ use Filament\\Pages\\Page;
 
 class Inbox extends Page
 {
-    protected static string \$view = 'filament-panels::pages.dashboard';
+    {$view} \$view = 'filament-panels::pages.dashboard';
 }
 PHP);
         $this->write('Modules/'.$module.'/app/Filament/Pages/Base.php', "<?php namespace Modules\\{$module}\\Filament\\Pages; abstract class Base extends \\Filament\\Pages\\Page {}");
@@ -66,19 +95,20 @@ PHP);
     {
         $this->requiresPackage('Filament\\Panel', 'filament/filament');
         $this->shop();
+        [$resource, $listPage] = $this->resource('Shop', 'Product');
 
         $admin = Filament::getPanel('admin');
-        $this->assertContains('Modules\\Shop\\Filament\\Resources\\ProductResource', $admin->getResources());
+        $this->assertContains($resource, $admin->getResources());
         $this->assertContains('Modules\\Shop\\Filament\\Pages\\Reports', $admin->getPages());
         $this->assertNotContains('Modules\\Shop\\Filament\\Pages\\Base', $admin->getPages(), 'An abstract page is skipped.');
-        $this->assertNotContains('Modules\\Shop\\Filament\\Resources\\ProductResource\\Pages\\ListProducts', $admin->getPages(), 'Resource pages are not standalone pages.');
+        $this->assertNotContains($listPage, $admin->getPages(), 'Resource pages are not standalone pages.');
         $this->assertContains('Modules\\Shop\\Filament\\Widgets\\Sales', $admin->getWidgets());
         $this->assertNotContains('Modules\\Shop\\Filament\\App\\Pages\\Inbox', $admin->getPages(), 'Filament/App is the "app" panel\'s.');
 
         $app = Filament::getPanel('app');
         $this->assertContains('Modules\\Shop\\Filament\\App\\Pages\\Inbox', $app->getPages());
         $this->assertNotContains('Modules\\Shop\\Filament\\Pages\\Reports', $app->getPages(), 'Filament/Pages is the default panel\'s.');
-        $this->assertNotContains('Modules\\Shop\\Filament\\Resources\\ProductResource', $app->getResources());
+        $this->assertNotContains($resource, $app->getResources());
 
         $routes = array_map(static function ($route): string {
             return (string) $route->getName();
@@ -95,7 +125,7 @@ PHP);
         $this->shop();
         $this->reload(['disabled' => ['Shop']]);
 
-        $this->assertNotContains('Modules\\Shop\\Filament\\Resources\\ProductResource', Filament::getPanel('admin')->getResources());
+        $this->assertNotContains($this->resource('Shop', 'Product')[0], Filament::getPanel('admin')->getResources());
         $this->assertNotContains('Modules\\Shop\\Filament\\App\\Pages\\Inbox', Filament::getPanel('app')->getPages());
     }
 
@@ -113,6 +143,11 @@ PHP);
     public function test_the_generator_writes_a_resource_for_the_module_model(): void
     {
         $this->requiresPackage('Filament\\Resources\\Resource', 'filament/filament');
+
+        if ($this->discovers()) {
+            $this->markTestSkipped('Filament 4 and later write the resource with their own command.');
+        }
+
         $this->directory('Modules/Blog/app');
         $this->reload();
 
@@ -151,9 +186,42 @@ PHP);
         $this->assertStringContainsString("'view' => Pages\\ViewComment::route('/{record}'),", $comments);
         $this->assertFileExists($this->base.'/Modules/Blog/app/Filament/Resources/CommentResource/Pages/ViewComment.php');
 
+        $this->assertSame(0, $this->command('module:make:filament-resource', ['module' => 'Blog', 'name' => 'Note', '--panel' => 'app'])[0]);
+        $this->assertStringContainsString('namespace Modules\\Blog\\Filament\\App\\Resources;', (string) file_get_contents($this->base.'/Modules/Blog/app/Filament/App/Resources/NoteResource.php'), 'The "app" panel\'s folder.');
+        $this->assertSame(1, $this->command('module:make:filament-resource', ['module' => 'Blog', 'name' => 'Note', '--panel' => 'missing'])[0]);
+
         [$status, $output] = $this->command('module:make:filament-resource', ['module' => 'Blog', 'name' => 'Missing', '--generate' => true]);
         $this->assertSame(1, $status);
         $this->assertStringContainsString('does not exist yet', $output);
+    }
+
+    public function test_filament_4_and_later_write_the_resource_with_their_own_command(): void
+    {
+        $this->requiresPackage(FilamentComponents::SCHEMA, 'filament/filament 4 or later');
+        $this->directory('Modules/Blog/app');
+        $this->write('Modules/Blog/app/Models/Post.php', '<?php namespace Modules\\Blog\\Models; class Post extends \\Illuminate\\Database\\Eloquent\\Model {}');
+        $this->reload();
+
+        [$status, $output] = $this->command('module:make:filament-resource', ['module' => 'Blog', 'name' => 'Post']);
+        $this->assertSame(0, $status, $output);
+        $resource = (string) file_get_contents($this->base.'/Modules/Blog/app/Filament/Resources/Posts/PostResource.php');
+        $this->assertStringContainsString('namespace Modules\\Blog\\Filament\\Resources\\Posts;', $resource);
+        $this->assertStringContainsString('use Modules\\Blog\\Models\\Post;', $resource);
+        $this->assertFileExists($this->base.'/Modules/Blog/app/Filament/Resources/Posts/Pages/ListPosts.php');
+
+        [$status, $output] = $this->command('module:make:filament-resource', ['module' => 'Blog', 'name' => 'Post', '--panel' => 'app', '--simple' => true]);
+        $this->assertSame(0, $status, $output);
+        $this->assertStringContainsString('namespace Modules\\Blog\\Filament\\App\\Resources\\Posts;', (string) file_get_contents($this->base.'/Modules/Blog/app/Filament/App/Resources/Posts/PostResource.php'));
+        $this->assertFileExists($this->base.'/Modules/Blog/app/Filament/App/Resources/Posts/Pages/ManagePosts.php');
+
+        $this->reload();
+        $this->assertContains('Modules\\Blog\\Filament\\Resources\\Posts\\PostResource', Filament::getPanel('admin')->getResources(), 'The panel discovers the module folder.');
+        $this->assertContains('Modules\\Blog\\Filament\\App\\Resources\\Posts\\PostResource', Filament::getPanel('app')->getResources());
+
+        [$status, $output] = $this->command('module:make:filament-resource', ['module' => 'Blog', 'name' => 'Note', '--model' => 'App\\Models\\Comment']);
+        $this->assertSame(1, $status);
+        $this->assertStringContainsString('name it [CommentResource]', $output);
+        $this->assertSame(1, $this->command('module:make:filament-resource', ['module' => 'Blog', 'name' => 'Note', '--panel' => 'missing'])[0]);
     }
 
     public function test_without_filament_the_generator_refuses_and_writes_nothing(): void
