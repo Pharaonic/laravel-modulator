@@ -60,18 +60,29 @@ abstract class TestCase extends Orchestra
 
     protected function getPackageProviders($app)
     {
-        // Livewire and Filament are optional: registered first when installed, as
-        // package discovery would in an application.
+        // Livewire, Filament and laravel-executor are optional: registered first
+        // when installed, as package discovery would in an application, with
+        // the application's Filament panels after them.
         $optional = [
             'Livewire\\LivewireServiceProvider',
             'BladeUI\\Icons\\BladeIconsServiceProvider',
             'BladeUI\\Heroicons\\BladeHeroiconsServiceProvider',
+            'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
+            'Kirschbaum\\PowerJoins\\PowerJoinsServiceProvider',
             'Filament\\Support\\SupportServiceProvider',
+            'Filament\\Actions\\ActionsServiceProvider',
             'Filament\\Forms\\FormsServiceProvider',
-            'Filament\\Tables\\TablesServiceProvider',
+            'Filament\\Infolists\\InfolistsServiceProvider',
             'Filament\\Notifications\\NotificationsServiceProvider',
+            'Filament\\Tables\\TablesServiceProvider',
+            'Filament\\Widgets\\WidgetsServiceProvider',
             'Filament\\FilamentServiceProvider',
+            'Pharaonic\\Laravel\\Executor\\ExecutorServiceProvider',
         ];
+
+        if (class_exists('Filament\\Panel')) {
+            $optional[] = Fixtures\Filament\PanelsProvider::class;
+        }
 
         return array_merge(array_values(array_filter($optional, 'class_exists')), [ModulatorServiceProvider::class]);
     }

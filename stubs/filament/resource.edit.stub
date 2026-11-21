@@ -3,14 +3,14 @@
 namespace {{ pagesNamespace }};
 
 use {{ resource }};
-use Filament\Pages\Actions;
+use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 class {{ editClass }} extends EditRecord
 {
     protected static string $resource = {{ resourceClass }}::class;
 
-    protected function getActions(): array
+    protected function getHeaderActions(): array
     {
         return [
 {{ editActions }}

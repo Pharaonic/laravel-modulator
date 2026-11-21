@@ -121,7 +121,7 @@ final class FilamentResourceMakeCommand extends GeneratorCommand
             'tableColumns' => $this->indent($columns, 4),
             'tableFilters' => $this->indent($softDeletes ? 'Tables\\Filters\\TrashedFilter::make(),' : '//', 4),
             'tableActions' => $this->indent(implode("\n", $tableActions), 4),
-            'tableBulkActions' => $this->indent(implode("\n", $bulkActions), 4),
+            'tableBulkActions' => $this->indent(implode("\n", $bulkActions), 5),
             'pages' => $this->indent(implode("\n", $pages), 3),
             'relations' => $simple ? '' : $this->indent("\npublic static function getRelations(): array\n{\n    return [\n        //\n    ];\n}\n", 1),
             'eloquentQuery' => $softDeletes ? $this->indent("\n\npublic static function getEloquentQuery(): Builder\n{\n    return parent::getEloquentQuery()\n        ->withoutGlobalScopes([\n            SoftDeletingScope::class,\n        ]);\n}", 1) : '',
@@ -162,7 +162,7 @@ final class FilamentResourceMakeCommand extends GeneratorCommand
         }
 
         try {
-            $schema = new FilamentSchema();
+            $schema = new FilamentSchema;
 
             return [$schema->form($model), $schema->table($model)];
         } catch (Throwable $e) {
