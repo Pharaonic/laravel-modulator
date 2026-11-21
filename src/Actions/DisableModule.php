@@ -18,9 +18,7 @@ use RuntimeException;
  */
 final class DisableModule
 {
-    public function __construct(private Manifest $manifest, private DisabledList $list)
-    {
-    }
+    public function __construct(private Manifest $manifest, private DisabledList $list) {}
 
     /**
      * @return array{disabled: bool, children: list<string>, dependents: array<string, string>} Whether it

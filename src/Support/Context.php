@@ -18,9 +18,7 @@ use RuntimeException;
  */
 final class Context
 {
-    public function __construct(private string $storage)
-    {
-    }
+    public function __construct(private string $storage) {}
 
     public function get(): ?string
     {

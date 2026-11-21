@@ -47,8 +47,7 @@ final class Manifest
         private string $path,
         private $pools,
         private bool $cache
-    ) {
-    }
+    ) {}
 
     public function path(): string
     {
