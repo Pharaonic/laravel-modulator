@@ -81,7 +81,14 @@ class MakeOptionsTest extends TestCase
         $this->write('vendor/bin/pest', '<?php');
 
         $this->make('test', ['name' => 'PriceTest']);
-        $this->assertStringContainsString("test('example'", $this->file('tests/Feature/PriceTest.php'));
+        $feature = $this->file('tests/Feature/PriceTest.php');
+        $this->assertStringContainsString("test('example'", $feature);
+        $this->assertStringContainsString('uses(Tests\\TestCase::class);', $feature, 'A module feature test is outside tests/, so it binds the TestCase itself.');
+
+        $this->make('test', ['name' => 'MathTest', '--unit' => true]);
+        $unit = $this->file('tests/Unit/MathTest.php');
+        $this->assertStringContainsString("test('example'", $unit);
+        $this->assertStringNotContainsString('uses(', $unit);
 
         $this->make('test', ['name' => 'StockTest', '--phpunit' => true]);
         $this->assertStringContainsString('extends TestCase', $this->file('tests/Feature/StockTest.php'));

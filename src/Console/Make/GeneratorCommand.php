@@ -279,20 +279,23 @@ abstract class GeneratorCommand extends Command
     }
 
     /**
-     * "pest.stub", "test.stub" or "test.unit.stub": --phpunit and --pest
-     * decide, otherwise Pest when it is installed.
+     * "pest.stub", "pest.unit.stub", "test.stub" or "test.unit.stub": --phpunit
+     * and --pest decide, otherwise Pest when it is installed. A Pest feature
+     * test binds Tests\TestCase itself: module tests are outside tests/, where
+     * the application's tests/Pest.php binds it.
      */
     protected function testStub(): string
     {
         $definition = $this->getDefinition();
         $pest = $definition->hasOption('pest') && $this->option('pest');
         $phpunit = $definition->hasOption('phpunit') && $this->option('phpunit');
+        $unit = $definition->hasOption('unit') && $this->option('unit');
 
         if (! $phpunit && ($pest || $this->pestInstalled())) {
-            return 'pest.stub';
+            return $unit ? 'pest.unit.stub' : 'pest.stub';
         }
 
-        return $definition->hasOption('unit') && $this->option('unit') ? 'test.unit.stub' : 'test.stub';
+        return $unit ? 'test.unit.stub' : 'test.stub';
     }
 
     protected function pestInstalled(): bool
