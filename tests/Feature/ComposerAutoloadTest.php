@@ -179,7 +179,7 @@ class ComposerAutoloadTest extends TestCase
      * @param  list<string>  $flags
      */
     #[DataProvider('modes')]
-    public function test_a_child_module_overridden_alone_under_every_autoloader(array $flags): void
+    public function test_a_child_module_overridden_alone_under_every_autoloader(array $flags, bool $authoritative): void
     {
         self::composer(array_merge(['dump-autoload', '--no-interaction'], $flags));
 
@@ -189,6 +189,7 @@ class ComposerAutoloadTest extends TestCase
         $this->artisan(['module:cache']);
 
         $probe = $this->probe();
+        $this->assertSame($authoritative, $probe['authoritative']);
         $this->assertSame('local', $probe['orders_pool']);
         $this->assertSame('local', $probe['order']);
         $this->assertSame('acme/shop', $probe['shop_pool']);

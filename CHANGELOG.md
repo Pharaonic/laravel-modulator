@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## 12.0.0 - Unreleased
+
+### Compatibility
+
+- Supports Laravel 12.0 and newer within 12.x, on PHP 8.2, 8.3, 8.4 and 8.5.
+- Same features and behavior as 11.2.0: Livewire 3 and 4, Filament 3, 4 and 5, and laravel-executor's 12.x line.
+
 ## 11.2.0 - 2026-11-21
 
 ### Added

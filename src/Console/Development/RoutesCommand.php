@@ -7,6 +7,7 @@ namespace Pharaonic\Laravel\Modulator\Console\Development;
 use Illuminate\Console\Command;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Arr;
 use Pharaonic\Laravel\Modulator\Concerns\ResolvesModules;
 use Pharaonic\Laravel\Modulator\Module;
 use Throwable;
@@ -133,8 +134,7 @@ final class RoutesCommand extends Command
         try {
             $middleware = $route->gatherMiddleware();
         } catch (Throwable $e) {
-            $declared = $route->middleware();
-            $middleware = is_array($declared) ? $declared : [];
+            $middleware = Arr::wrap($route->middleware());
         }
 
         return implode(',', array_filter($middleware, 'is_string'));
