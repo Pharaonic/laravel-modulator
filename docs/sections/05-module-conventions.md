@@ -74,6 +74,7 @@ With `livewire/livewire` installed (Livewire 3), the components in a module's `a
 - Only enabled modules register components; abstract classes and classes that are not `Livewire\Component` are skipped.
 - The classes come from the module class map, so a cached manifest (`module:cache`) needs no scan.
 - Create one with `module:make:livewire` (see Generators).
+- Livewire 3 only for now: install `livewire/livewire:^3.6`. Livewire 4 is not supported yet.
 
 ### Filament Resources, Pages And Widgets
 
@@ -91,6 +92,7 @@ Nothing goes in your panel providers. The resources' own pages, relation manager
 - A panel is the default one when `->default()` comes before `->id()` in its provider, as in the provider Filament generates.
 - After `php artisan filament:cache-components`, panels use the cache: run it again when module classes change.
 - Create a resource with `module:make:filament-resource` (see Generators).
+- Filament 3 only for now: install `filament/filament:^3.3`. Filament 4 and 5 are not supported yet.
 
 ### Executors
 

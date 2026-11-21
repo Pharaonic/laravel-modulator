@@ -4,8 +4,8 @@ Install the package with Composer; the service provider registers itself.
 
 ### Requirements
 
-- PHP 8.1, 8.2 or 8.3
-- Laravel 10.0 or newer within 10.x
+- PHP 8.2, 8.3 or 8.4
+- Laravel 11.0 or newer within 11.x
 
 ### Composer Installation
 
