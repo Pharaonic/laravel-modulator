@@ -129,6 +129,7 @@ final class ModulatorServiceProvider extends ServiceProvider
             Console\Make\ControllerMakeCommand::class,
             Console\Make\EnumMakeCommand::class,
             Console\Make\EventMakeCommand::class,
+            Console\Make\ExecutorMakeCommand::class,
             Console\Make\ExceptionMakeCommand::class,
             Console\Make\FactoryMakeCommand::class,
             Console\Make\FilamentResourceMakeCommand::class,
