@@ -120,6 +120,16 @@ class MakeOptionsTest extends TestCase
         $this->make('controller', ['name' => 'PanelController', '--type' => 'admin']);
         $this->assertStringContainsString('// admin', $this->file('app/Http/Controllers/PanelController.php'));
         $this->assertSame(1, $this->command('module:make:controller', ['module' => 'Shop', 'name' => 'X', '--type' => 'missing'])[0]);
+
+        $this->make('controller', ['name' => 'ProfileController', '--singleton' => true, '--creatable' => true]);
+        $profile = $this->file('app/Http/Controllers/ProfileController.php');
+        $this->assertStringContainsString('public function show()', $profile);
+        $this->assertStringNotContainsString('abort(404)', $profile);
+
+        $this->make('controller', ['name' => 'Api/SettingsController', '--singleton' => true, '--api' => true]);
+        $settings = $this->file('app/Http/Controllers/Api/SettingsController.php');
+        $this->assertStringContainsString('abort(404);', $settings, 'A singleton that is not creatable refuses create and store.');
+        $this->assertStringNotContainsString('public function edit(', $settings);
     }
 
     public function test_model_options(): void
@@ -286,5 +296,20 @@ PHP);
 
         $this->assertSame(2, cache('imported'));
         $this->assertTrue(\Illuminate\Support\Facades\Bus::findBatch($batch->id)->finished());
+    }
+
+    public function test_a_singleton_controller_serves_its_singleton_routes(): void
+    {
+        $this->make('controller', ['name' => 'ProfileController', '--singleton' => true, '--creatable' => true]);
+        $this->make('controller', ['name' => 'AvatarController', '--singleton' => true]);
+        $this->reload();
+
+        \Illuminate\Support\Facades\Route::singleton('profile', 'Modules\\Shop\\Http\\Controllers\\ProfileController')->creatable();
+        \Illuminate\Support\Facades\Route::singleton('avatar', 'Modules\\Shop\\Http\\Controllers\\AvatarController')->creatable();
+
+        $this->get('/profile')->assertOk();
+        $this->get('/profile/create')->assertOk();
+        $this->get('/avatar')->assertOk();
+        $this->get('/avatar/create')->assertNotFound();
     }
 }

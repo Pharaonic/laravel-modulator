@@ -37,11 +37,14 @@ final class ControllerMakeCommand extends GeneratorCommand
             ['parent', 'p', InputOption::VALUE_REQUIRED, 'Generate a nested resource controller for the given parent model'],
             ['resource', 'r', InputOption::VALUE_NONE, 'Generate a resource controller'],
             ['requests', 'R', InputOption::VALUE_NONE, 'Generate form requests for the store and update actions'],
+            ['singleton', 's', InputOption::VALUE_NONE, 'Generate a singleton resource controller'],
+            ['creatable', null, InputOption::VALUE_NONE, 'Make the singleton resource creatable'],
         ];
     }
 
     protected function build(Module $module, string $class, array $segments, array $replace, Repository $config): array
     {
+        $singleton = (bool) $this->option('singleton');
         $parent = $this->stringOption('parent', '');
         $model = $this->model($class);
         $imports = [];
@@ -70,9 +73,10 @@ final class ControllerMakeCommand extends GeneratorCommand
         }
 
         $replace['parentParameters'] = $parentParameter;
-        $replace['parameters'] = $this->join($parentParameter, $modelParameter);
+        $replace['parameters'] = $this->join($parentParameter, $singleton ? '' : $modelParameter);
         $replace['storeParameters'] = $this->join($requests[0].' $request', $parentParameter);
-        $replace['updateParameters'] = $this->join($requests[1].' $request', $parentParameter, $modelParameter);
+        $replace['updateParameters'] = $this->join($requests[1].' $request', $parentParameter, $singleton ? '' : $modelParameter);
+        $replace['abort'] = $this->option('creatable') ? '//' : 'abort(404);';
         $replace['imports'] = $this->imports($imports);
 
         return [$this->choose($model !== null || $parent !== ''), $replace, []];
@@ -104,7 +108,7 @@ final class ControllerMakeCommand extends GeneratorCommand
     {
         $model = $this->modelOption();
 
-        if ($model === null && $this->stringOption('parent', '') !== '') {
+        if ($model === null && $this->stringOption('parent', '') !== '' && ! $this->option('singleton')) {
             return (string) preg_replace('/Controller$/', '', $class);
         }
 
@@ -129,6 +133,10 @@ final class ControllerMakeCommand extends GeneratorCommand
 
         if ($this->option('invokable')) {
             return 'controller.invokable.stub';
+        }
+
+        if ($this->option('singleton')) {
+            return $api ? 'controller.singleton.api.stub' : 'controller.singleton.stub';
         }
 
         if ($api || $resource || $this->option('resource')) {

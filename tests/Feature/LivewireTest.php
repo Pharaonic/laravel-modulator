@@ -9,7 +9,7 @@ use Pharaonic\Laravel\Modulator\Tests\TestCase;
 
 class LivewireTest extends TestCase
 {
-    private function component(string $module, string $namespace, string $class, string $html): void
+    private function livewireComponent(string $module, string $namespace, string $class, string $html): void
     {
         $position = strrpos($class, '\\');
         $short = $position === false ? $class : substr($class, $position + 1);
@@ -42,9 +42,9 @@ PHP);
     public function test_module_components_are_registered_under_the_module_slug(): void
     {
         $this->requiresPackage('Livewire\\Component', 'livewire/livewire');
-        $this->component('Modules/Shop', 'Modules\\Shop', 'Cart', 'shop cart');
-        $this->component('Modules/Shop', 'Modules\\Shop', 'Admin\\UserTable', 'user table');
-        $this->component('Modules/Shop/Modules/Orders', 'Modules\\Shop\\Orders', 'OrderList', 'order list');
+        $this->livewireComponent('Modules/Shop', 'Modules\\Shop', 'Cart', 'shop cart');
+        $this->livewireComponent('Modules/Shop', 'Modules\\Shop', 'Admin\\UserTable', 'user table');
+        $this->livewireComponent('Modules/Shop/Modules/Orders', 'Modules\\Shop\\Orders', 'OrderList', 'order list');
         $this->write('Modules/Shop/app/Http/Livewire/Base.php', '<?php namespace Modules\\Shop\\Http\\Livewire; abstract class Base extends \\Livewire\\Component {}');
         $this->write('Modules/Shop/app/Http/Livewire/Helper.php', '<?php namespace Modules\\Shop\\Http\\Livewire; class Helper {}');
         $this->reload();
@@ -62,7 +62,7 @@ PHP);
     public function test_components_of_a_disabled_module_are_not_registered(): void
     {
         $this->requiresPackage('Livewire\\Component', 'livewire/livewire');
-        $this->component('Modules/Shop', 'Modules\\Shop', 'Cart', 'shop cart');
+        $this->livewireComponent('Modules/Shop', 'Modules\\Shop', 'Cart', 'shop cart');
         $this->reload(['disabled' => ['Shop']]);
 
         $this->assertArrayNotHasKey('shop::cart', app('livewire')->getComponentAliases());

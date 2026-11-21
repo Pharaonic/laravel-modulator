@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## 9.0.0 - Unreleased
+
+### Added
+
+- `module:make:controller --singleton` (with `--api`) and `--creatable`, for singleton resource routes (`Route::singleton()`), which need Laravel 9.42.
+
+### Compatibility
+
+- Supports Laravel 9.42 and newer within 9.x, on PHP 8.0, 8.1 and 8.2. 9.42 is the first release with singleton resource routes, and it also runs on PHP 8.2 (older 9.x releases break with Carbon on PHP 8.2).
+- Same features and behavior as 8.0.0, plus the options above.
+
 ## 8.0.0 - 2026-11-21
 
 ### Added

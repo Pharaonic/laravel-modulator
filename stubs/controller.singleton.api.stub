@@ -1,0 +1,41 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+
+class {{ class }} extends Controller
+{
+    /**
+     * Store the newly created resource in storage.
+     */
+    public function store({{ storeParameters }})
+    {
+        {{ abort }}
+    }
+
+    /**
+     * Display the resource.
+     */
+    public function show({{ parentParameters }})
+    {
+        //
+    }
+
+    /**
+     * Update the resource in storage.
+     */
+    public function update({{ updateParameters }})
+    {
+        //
+    }
+
+    /**
+     * Remove the resource from storage.
+     */
+    public function destroy({{ parentParameters }})
+    {
+        {{ abort }}
+    }
+}

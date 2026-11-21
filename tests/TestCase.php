@@ -50,6 +50,14 @@ abstract class TestCase extends Orchestra
         return $this->base;
     }
 
+    /**
+     * Testbench 7.22+ builds the application from this instead of getBasePath().
+     */
+    protected function getApplicationBasePath()
+    {
+        return $this->base;
+    }
+
     protected function getPackageProviders($app)
     {
         // Livewire and Filament are optional: registered first when installed, as
