@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## 13.0.0 - Unreleased
+## 13.0.0 - 2026-11-21
 
 ### Compatibility
 
