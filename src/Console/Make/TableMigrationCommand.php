@@ -6,7 +6,6 @@ namespace Pharaonic\Laravel\Modulator\Console\Make;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
-use Illuminate\Support\Str;
 use Pharaonic\Laravel\Modulator\Concerns\ResolvesModules;
 use Pharaonic\Laravel\Modulator\Support\Files;
 use Pharaonic\Laravel\Modulator\Support\Stubs;
@@ -15,7 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * The base of module:make:cache-table, module:make:notifications-table,
- * module:make:queue-failed-table,
+ * module:make:queue-batches-table, module:make:queue-failed-table,
  * module:make:queue-table and module:make:session-table: the migrations of
  * Laravel's framework tables, written into a module.
  *
@@ -94,14 +93,11 @@ abstract class TableMigrationCommand extends Command
             return 1;
         }
 
-        // Anonymous migrations need Laravel 8.37 or newer.
-        $anonymous = method_exists('Illuminate\\Database\\Migrations\\Migrator', 'resolvePath');
-        // Anonymous migrations need Laravel 8.37 or newer.
-        $anonymous = method_exists('Illuminate\\Database\\Migrations\\Migrator', 'resolvePath');
+        // Anonymous migration classes: every Laravel this line supports has them (8.37+).
         $replace = array_merge([
             'table' => $table,
-            'open' => $anonymous ? 'return new class extends Migration' : 'class '.Str::studly($name).' extends Migration',
-            'close' => $anonymous ? ';' : '',
+            'open' => 'return new class extends Migration',
+            'close' => ';',
         ], $this->replacements($config));
 
         $file = $directory.DIRECTORY_SEPARATOR.date('Y_m_d_His').'_'.$name.'.php';
