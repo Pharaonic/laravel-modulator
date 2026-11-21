@@ -33,6 +33,16 @@ abstract class TestCase extends Orchestra
         $this->base = self::temporaryDirectory('modulator-app');
         (new Filesystem)->copyDirectory(__DIR__.'/../vendor/orchestra/testbench-core/laravel', $this->base);
 
+        // Testbench 9 builds the application from the skeleton's bootstrap/app.php
+        // when the base path has one, at the skeleton's path on 9.0: without it,
+        // the application is built at the base path. The file it found is also
+        // cached for the whole class, and every test has its own directory.
+        @unlink($this->base.'/bootstrap/app.php');
+
+        if (property_exists(static::class, 'cacheApplicationBootstrapFile')) {
+            static::$cacheApplicationBootstrapFile = null;
+        }
+
         parent::setUp();
     }
 

@@ -4,13 +4,12 @@ namespace Pharaonic\Laravel\Modulator\Tests\Unit\Support;
 
 use InvalidArgumentException;
 use Pharaonic\Laravel\Modulator\Support\Identity;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class IdentityTest extends TestCase
 {
-    /**
-     * @dataProvider validIdentities
-     */
+    #[DataProvider('validIdentities')]
     public function test_it_accepts_studly_identities(string $id): void
     {
         $this->assertTrue(Identity::isValid($id));
@@ -20,7 +19,7 @@ class IdentityTest extends TestCase
     /**
      * @return array<string, array{string}>
      */
-    public function validIdentities(): array
+    public static function validIdentities(): array
     {
         return [
             'single' => ['Shop'],
@@ -30,9 +29,7 @@ class IdentityTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider invalidIdentities
-     */
+    #[DataProvider('invalidIdentities')]
     public function test_it_rejects_traversal_and_invalid_names(string $id): void
     {
         $this->assertFalse(Identity::isValid($id));
@@ -44,7 +41,7 @@ class IdentityTest extends TestCase
     /**
      * @return array<string, array{string}>
      */
-    public function invalidIdentities(): array
+    public static function invalidIdentities(): array
     {
         return [
             'empty' => [''],

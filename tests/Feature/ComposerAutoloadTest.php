@@ -4,6 +4,8 @@ namespace Pharaonic\Laravel\Modulator\Tests\Feature;
 
 use Illuminate\Filesystem\Filesystem;
 use Pharaonic\Laravel\Modulator\Support\Files;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -17,9 +19,8 @@ use Symfony\Component\Process\Process;
  *
  *   composer install / dump-autoload [-o|-a]  (runs package:discover)
  *   php artisan module:cache
- *
- * @group composer
  */
+#[Group('composer')]
 class ComposerAutoloadTest extends TestCase
 {
     /**
@@ -52,16 +53,19 @@ class ComposerAutoloadTest extends TestCase
         $config = str_replace("env('APP_KEY')", "'base64:".base64_encode(str_repeat('k', 32))."'", $config);
         $config = str_replace("(bool) env('APP_DEBUG', false)", 'true', $config);
         $config = str_replace('// App\\Providers\\RouteServiceProvider::class,', 'App\\Providers\\RouteServiceProvider::class,', $config);
+        // Laravel 11's configuration lists no route provider to uncomment: add it.
+        $config = str_replace('// App\\Providers\\AppServiceProvider::class,', 'App\\Providers\\RouteServiceProvider::class,', $config);
         file_put_contents($root.'/app/config/app.php', $config);
 
         file_put_contents($root.'/app/composer.json', (string) json_encode([
             'name' => 'fixture/app',
             'type' => 'project',
-            'require' => [
+            // The versions this test run installed (lowest or highest), so the
+            // application runs on the same framework and components.
+            'require' => array_merge(self::installedVersions(), [
                 'acme/shop' => '*@dev',
-                'laravel/framework' => self::installedVersion('laravel/framework'),
                 'pharaonic/laravel-modulator' => '*@dev',
-            ],
+            ]),
             'repositories' => [
                 ['type' => 'path', 'url' => realpath(__DIR__.'/../..'), 'options' => ['symlink' => true]],
                 ['type' => 'path', 'url' => '../package', 'options' => ['symlink' => true]],
@@ -103,7 +107,7 @@ class ComposerAutoloadTest extends TestCase
     /**
      * @return array<string, array{list<string>, bool}>
      */
-    public function modes(): array
+    public static function modes(): array
     {
         return [
             'default' => [[], false],
@@ -113,10 +117,9 @@ class ComposerAutoloadTest extends TestCase
     }
 
     /**
-     * @dataProvider modes
-     *
      * @param  list<string>  $flags
      */
+    #[DataProvider('modes')]
     public function test_a_package_module_then_its_local_override_under_every_autoloader(array $flags, bool $authoritative): void
     {
         self::composer(array_merge(['dump-autoload', '--no-interaction'], $flags));
@@ -173,10 +176,9 @@ class ComposerAutoloadTest extends TestCase
     }
 
     /**
-     * @dataProvider modes
-     *
      * @param  list<string>  $flags
      */
+    #[DataProvider('modes')]
     public function test_a_child_module_overridden_alone_under_every_autoloader(array $flags): void
     {
         self::composer(array_merge(['dump-autoload', '--no-interaction'], $flags));
@@ -315,16 +317,28 @@ class ComposerAutoloadTest extends TestCase
         $process->mustRun();
     }
 
-    private static function installedVersion(string $package): string
+    /**
+     * The exact versions of the packages this repository requires to run
+     * (not its development tools), as installed.
+     *
+     * @return array<string, string>
+     */
+    private static function installedVersions(): array
     {
         $installed = json_decode((string) file_get_contents(__DIR__.'/../../vendor/composer/installed.json'), true);
+        $dev = $installed['dev-package-names'] ?? [];
+        $versions = [];
 
         foreach ($installed['packages'] ?? $installed as $entry) {
-            if (($entry['name'] ?? null) === $package) {
-                return (string) $entry['version'];
+            $name = $entry['name'] ?? null;
+
+            if (is_string($name) && ! in_array($name, $dev, true)) {
+                $versions[$name] = (string) $entry['version'];
             }
         }
 
-        return '*';
+        ksort($versions);
+
+        return $versions;
     }
 }
