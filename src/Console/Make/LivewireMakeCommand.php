@@ -22,7 +22,7 @@ final class LivewireMakeCommand extends GeneratorCommand
      */
     protected $description = 'Create a new Livewire component in a module';
 
-    protected string $directory = 'Http\\Livewire';
+    protected string $directory = 'Livewire';
 
     protected string $stub = 'livewire.stub';
 
@@ -55,10 +55,10 @@ final class LivewireMakeCommand extends GeneratorCommand
         if ($this->option('test') || $this->option('pest') || $this->option('phpunit')) {
             $legacy = $module->source()->legacy;
             $replace['namespacedComponent'] = $replace['namespace'].'\\'.$class;
-            $replace['testNamespace'] = rtrim($module->namespace().($legacy ? '\\tests\\' : '\\Tests\\').'Feature\\Http\\Livewire\\'.implode('\\', $segments), '\\');
+            $replace['testNamespace'] = rtrim($module->namespace().($legacy ? '\\tests\\' : '\\Tests\\').'Feature\\Livewire\\'.implode('\\', $segments), '\\');
             $replace['testClass'] = $class.'Test';
             $stub = str_starts_with($this->testStub(), 'pest') ? 'livewire.pest.stub' : 'livewire.test.stub';
-            $templates[] = [$module->path('tests/Feature/Http/Livewire/'.implode('/', array_merge($segments, [$class.'Test'])).'.php'), $stub];
+            $templates[] = [$module->path('tests/Feature/Livewire/'.implode('/', array_merge($segments, [$class.'Test'])).'.php'), $stub];
         }
 
         return [$this->option('inline') ? 'livewire.inline.stub' : $this->stub, $replace, $templates];
