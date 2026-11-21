@@ -9,6 +9,7 @@ use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\Compilers\BladeCompiler;
 use LogicException;
 use Pharaonic\Laravel\Modulator\Autoload\Autoloader;
 use Pharaonic\Laravel\Modulator\Autoload\FactoryResolver;
@@ -16,6 +17,7 @@ use Pharaonic\Laravel\Modulator\Discovery\Manifest;
 use Pharaonic\Laravel\Modulator\Discovery\PoolResolver;
 use Pharaonic\Laravel\Modulator\Support\DisabledList;
 use Pharaonic\Laravel\Modulator\Support\ModuleResources;
+use Pharaonic\Laravel\Modulator\Support\ViteEntries;
 use RuntimeException;
 
 final class ModulatorServiceProvider extends ServiceProvider
@@ -75,6 +77,12 @@ final class ModulatorServiceProvider extends ServiceProvider
 
         FactoryResolver::install($this->app, $namespaces);
 
+        $this->callAfterResolving('blade.compiler', static function (BladeCompiler $blade): void {
+            $blade->directive('moduleVite', static function (string $expression): string {
+                return '<?php echo \\'.ViteEntries::class.'::tags('.$expression.'); ?>';
+            });
+        });
+
         if (! $this->app->runningInConsole()) {
             return;
         }
@@ -104,6 +112,7 @@ final class ModulatorServiceProvider extends ServiceProvider
             // Development
             Console\Development\RoutesCommand::class,
             Console\Development\TestCommand::class,
+            Console\Development\ViteCommand::class,
             // Discovery
             Console\Discovery\CacheCommand::class,
             Console\Discovery\ClearCommand::class,

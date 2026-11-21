@@ -76,4 +76,19 @@ return [
         'stubs' => null,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Vite
+    |--------------------------------------------------------------------------
+    |
+    | The entry points a module has, relative to the module. The ones that
+    | exist are the inputs module:vite lists for vite.config.js, and the
+    | entries @moduleVite('Shop') renders.
+    |
+    */
+
+    'vite' => [
+        'entries' => ['resources/css/app.css', 'resources/js/app.js'],
+    ],
+
 ];
