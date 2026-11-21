@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented here.
 
+## 7.0.0 - Unreleased
+
+### Added
+
+- `module:make:cast` (with `--inbound`) and `module:make:component` (`--inline`, `--view`, `--path=`), which need Laravel 7.
+
+### Changed
+
+- A Pest feature test written by the generators binds `Tests\TestCase` itself (`uses(Tests\TestCase::class)`): module tests live outside `tests/`, where `tests/Pest.php` binds it, so they had no Laravel test helpers. Unit tests (`--unit`) get their own stub without it.
+
+### Compatibility
+
+- Supports Laravel 7.30 and newer within 7.x, on PHP 8.0.
+- Same features and behavior as 6.0.1, plus the commands above.
+
 ## 6.0.1 - 2026-11-21
 
 ### Fixed
