@@ -37,7 +37,7 @@ class MakeOptionsTest extends TestCase
 
     public function test_every_laravel_make_command_has_a_module_command(): void
     {
-        $laravel = ['cache-table', 'cast', 'channel', 'class', 'command', 'component', 'config', 'controller', 'event', 'exception', 'factory', 'interface', 'job', 'job-middleware', 'listener', 'mail', 'middleware', 'migration', 'model', 'notification', 'notifications-table', 'observer', 'policy', 'provider', 'queue-batches-table', 'queue-failed-table', 'queue-table', 'request', 'resource', 'rule', 'scope', 'seeder', 'session-table', 'test', 'trait', 'view'];
+        $laravel = ['cache-table', 'cast', 'channel', 'class', 'command', 'component', 'config', 'controller', 'enum', 'event', 'exception', 'factory', 'interface', 'job', 'job-middleware', 'listener', 'mail', 'middleware', 'migration', 'model', 'notification', 'notifications-table', 'observer', 'policy', 'provider', 'queue-batches-table', 'queue-failed-table', 'queue-table', 'request', 'resource', 'rule', 'scope', 'seeder', 'session-table', 'test', 'trait', 'view'];
         $commands = Artisan::all();
 
         foreach ($laravel as $type) {
@@ -130,6 +130,26 @@ class MakeOptionsTest extends TestCase
         $settings = $this->file('app/Http/Controllers/Api/SettingsController.php');
         $this->assertStringContainsString('abort(404);', $settings, 'A singleton that is not creatable refuses create and store.');
         $this->assertStringNotContainsString('public function edit(', $settings);
+    }
+
+    public function test_enums_use_smart_enum(): void
+    {
+        $this->make('enum', ['name' => 'Kind']);
+        $this->assertStringContainsString("enum Kind\n{\n    use SmartEnum;", $this->file('app/Enums/Kind.php'));
+
+        $this->make('enum', ['name' => 'Status', '--string' => true]);
+        $status = $this->file('app/Enums/Status.php');
+        $this->assertStringContainsString('use Pharaonic\\SmartEnum\\SmartEnum;', $status);
+        $this->assertStringContainsString('enum Status: string', $status);
+        $this->write('Modules/Shop/app/Enums/Status.php', str_replace("    //\n", "    case Active = 'active';\n    case Draft = 'draft';\n", $status));
+
+        $this->make('enum', ['name' => 'Level', '--int' => true]);
+        $this->assertStringContainsString('enum Level: int', $this->file('app/Enums/Level.php'));
+
+        $this->reload();
+        $active = \Modules\Shop\Enums\Status::from('active');
+        $this->assertTrue($active->isActive());
+        $this->assertFalse($active->isDraft());
     }
 
     public function test_model_options(): void
@@ -229,7 +249,7 @@ class Label extends Model
 PHP);
         $this->reload();
 
-        $label = new \Modules\Shop\Models\Label();
+        $label = new \Modules\Shop\Models\Label;
         $label->name = 'sale';
         $this->assertSame('SALE', $label->name);
     }
@@ -249,7 +269,7 @@ PHP);
         $this->reload();
 
         $class = 'Modules\\Shop\\View\\Components\\Forms\\Input';
-        $this->assertSame('<input name="shop">', trim((string) (new $class())->render()->render()));
+        $this->assertSame('<input name="shop">', trim((string) (new $class)->render()->render()));
     }
 
     public function test_table_migrations_match_the_framework_tables(): void
@@ -290,9 +310,10 @@ PHP);
         $this->reload();
         $this->app['config']->set('database.default', 'testing');
         $this->app['config']->set('queue.default', 'sync');
+        $this->app['config']->set('queue.batching.database', 'testing');
         $this->assertSame(0, $this->command('module:migrate', ['module' => 'Shop'])[0]);
 
-        $batch = \Illuminate\Support\Facades\Bus::batch([new \Modules\Shop\Jobs\ImportRow(), new \Modules\Shop\Jobs\ImportRow()])->dispatch();
+        $batch = \Illuminate\Support\Facades\Bus::batch([new \Modules\Shop\Jobs\ImportRow, new \Modules\Shop\Jobs\ImportRow])->dispatch();
 
         $this->assertSame(2, cache('imported'));
         $this->assertTrue(\Illuminate\Support\Facades\Bus::findBatch($batch->id)->finished());
