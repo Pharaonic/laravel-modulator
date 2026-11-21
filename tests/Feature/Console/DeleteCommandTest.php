@@ -103,7 +103,8 @@ class DeleteCommandTest extends TestCase
         $this->assertSame(1, $this->command('module:delete', ['module' => 'Linked', '--force' => true])[0]);
         $this->assertDirectoryExists($outside.'/app');
 
-        unlink($this->base.'/Modules/Linked');
+        // A directory symlink is removed with rmdir() on Windows, unlink() elsewhere.
+        PHP_OS_FAMILY === 'Windows' ? rmdir($this->base.'/Modules/Linked') : unlink($this->base.'/Modules/Linked');
         rmdir($outside.'/app');
         rmdir($outside);
     }

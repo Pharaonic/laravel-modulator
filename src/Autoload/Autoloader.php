@@ -8,6 +8,7 @@ use Composer\Autoload\ClassLoader;
 use Pharaonic\Laravel\Modulator\Discovery\Source;
 use Pharaonic\Laravel\Modulator\ModuleRegistry;
 use Pharaonic\Laravel\Modulator\Support\Diagnostic;
+use Pharaonic\Laravel\Modulator\Support\Files;
 
 /**
  * Registers module classes with the application's Composer class loader.
@@ -103,7 +104,7 @@ final class Autoloader
         $diagnostics = [];
         $composer = $this->vendorPath.DIRECTORY_SEPARATOR.'composer'.DIRECTORY_SEPARATOR;
         $shadowedRoots = array_map(static function (Source $source): string {
-            return $source->path;
+            return Files::normalize($source->path);
         }, $shadowed);
 
         foreach ($this->readMap($composer.'autoload_classmap.php') as $class => $file) {
@@ -155,7 +156,7 @@ final class Autoloader
 
                     $candidate = realpath($directory.DIRECTORY_SEPARATOR.str_replace('\\', DIRECTORY_SEPARATOR, substr($namespace, strlen($prefix))));
 
-                    if ($candidate === false || $this->isInside($candidate, $source->path) || in_array($candidate, $shadowedRoots, true)) {
+                    if ($candidate === false || $this->isInside($candidate, $source->path) || in_array(Files::normalize($candidate), $shadowedRoots, true)) {
                         continue;
                     }
 
@@ -196,7 +197,7 @@ final class Autoloader
         $real = realpath($path);
         $path = $real === false ? $path : $real;
 
-        return $path === $directory || str_starts_with($path, $directory.DIRECTORY_SEPARATOR);
+        return Files::within($path, $directory);
     }
 
     /**

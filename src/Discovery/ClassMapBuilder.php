@@ -6,6 +6,7 @@ namespace Pharaonic\Laravel\Modulator\Discovery;
 
 use FilesystemIterator;
 use Pharaonic\Laravel\Modulator\Support\Diagnostic;
+use Pharaonic\Laravel\Modulator\Support\Files;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
@@ -76,6 +77,7 @@ final class ClassMapBuilder
     private function files(string $directory, array $exclude): array
     {
         $files = [];
+        $directory = Files::normalize($directory);
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS)
         );
@@ -89,7 +91,7 @@ final class ClassMapBuilder
             $path = $file->getPathname();
 
             foreach ($exclude as $excluded) {
-                if (str_starts_with($path, $excluded.DIRECTORY_SEPARATOR)) {
+                if (Files::within($path, $excluded)) {
                     continue 2;
                 }
             }

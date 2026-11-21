@@ -17,7 +17,7 @@ trait WritesFiles
      */
     protected function write(string $path, string $contents = ''): string
     {
-        $path = $this->isAbsolute($path) ? $path : $this->base.'/'.$path;
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $this->isAbsolute($path) ? $path : $this->base.'/'.$path);
 
         if (! is_dir(dirname($path))) {
             mkdir(dirname($path), 0777, true);
@@ -30,7 +30,7 @@ trait WritesFiles
 
     protected function directory(string $path): string
     {
-        $path = $this->isAbsolute($path) ? $path : $this->base.'/'.$path;
+        $path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $this->isAbsolute($path) ? $path : $this->base.'/'.$path);
 
         if (! is_dir($path)) {
             mkdir($path, 0777, true);

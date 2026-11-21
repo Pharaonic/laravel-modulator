@@ -305,7 +305,9 @@ class ComposerAutoloadTest extends TestCase
      */
     private static function composer(array $arguments): void
     {
-        $process = new Process(array_merge([PHP_BINARY, self::$composer], $arguments), self::$root.'/app', ['COMPOSER_NO_INTERACTION' => '1']);
+        // On Windows, "composer" is a composer.bat wrapper: run it directly, not through PHP.
+        $command = preg_match('/\\.(bat|cmd|exe)$/i', self::$composer) === 1 ? [self::$composer] : [PHP_BINARY, self::$composer];
+        $process = new Process(array_merge($command, $arguments), self::$root.'/app', ['COMPOSER_NO_INTERACTION' => '1']);
         $process->setTimeout(600);
         $process->mustRun();
     }

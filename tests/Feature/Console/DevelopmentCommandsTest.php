@@ -18,7 +18,7 @@ class DevelopmentCommandsTest extends TestCase
 
         $this->assertSame(3, $status);
         $this->assertSame(
-            [realpath($this->base.'/Modules/Shop').'/tests', '--filter=a; rm -rf / $(id)', '--stop-on-failure'],
+            [realpath($this->base.'/Modules/Shop').DIRECTORY_SEPARATOR.'tests', '--filter=a; rm -rf / $(id)', '--stop-on-failure'],
             json_decode((string) file_get_contents($this->base.'/vendor/bin/arguments.json'), true)
         );
 

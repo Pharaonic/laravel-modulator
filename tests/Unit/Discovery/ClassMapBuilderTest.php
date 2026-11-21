@@ -17,7 +17,7 @@ class ClassMapBuilderTest extends FilesystemTestCase
         $factory = $this->write('Shop/database/factories/ProductFactory.php', '<?php namespace Modules\\Shop\\Database\\Factories; class ProductFactory {}');
         $seeder = $this->write('Shop/database/seeders/ShopSeeder.php', '<?php namespace Modules\\Shop\\Database\\Seeders; class ShopSeeder {}');
         $this->write('Shop/app/helpers.php', '<?php function shop_helper() {}');
-        $this->write('Shop/app/Support/Uses.php', '<?php namespace Modules\\Shop\\Support; $x = Foo::class; $y = new class {}; final class Uses {}');
+        $uses = $this->write('Shop/app/Support/Uses.php', '<?php namespace Modules\\Shop\\Support; $x = Foo::class; $y = new class {}; final class Uses {}');
         $this->write('Shop/tests/ShopTest.php', '<?php namespace Modules\\Shop\\Tests; class ShopTest {}');
 
         $result = (new ClassMapBuilder)->build(new Source('Shop', 'local', 100, $this->base.'/Shop', 'Modules\\Shop'));
@@ -29,7 +29,7 @@ class ClassMapBuilderTest extends FilesystemTestCase
             'Modules\\Shop\\Database\\Seeders\\ShopSeeder' => $seeder,
             'Modules\\Shop\\Enums\\Status' => $enum,
             'Modules\\Shop\\Models\\Product' => $product,
-            'Modules\\Shop\\Support\\Uses' => $this->base.'/Shop/app/Support/Uses.php',
+            'Modules\\Shop\\Support\\Uses' => $uses,
         ], $result['classes']);
         $this->assertSame([], $result['diagnostics']);
     }

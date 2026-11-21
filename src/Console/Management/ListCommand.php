@@ -6,6 +6,7 @@ namespace Pharaonic\Laravel\Modulator\Console\Management;
 
 use Illuminate\Console\Command;
 use Pharaonic\Laravel\Modulator\Concerns\ResolvesModules;
+use Pharaonic\Laravel\Modulator\Support\Files;
 
 final class ListCommand extends Command
 {
@@ -48,8 +49,6 @@ final class ListCommand extends Command
 
     private function relative(string $path): string
     {
-        $base = rtrim($this->laravel->basePath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-
-        return str_starts_with($path, $base) ? substr($path, strlen($base)) : $path;
+        return Files::relative($path, $this->laravel->basePath());
     }
 }

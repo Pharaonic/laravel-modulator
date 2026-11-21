@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Pharaonic\Laravel\Modulator\Contracts\Pool;
 use Pharaonic\Laravel\Modulator\DirectoryPool;
 use Pharaonic\Laravel\Modulator\Support\Diagnostic;
+use Pharaonic\Laravel\Modulator\Support\Files;
 
 /**
  * Turns `pharaonic.modulator.pools` and the pools that installed Composer
@@ -148,7 +149,7 @@ final class PoolResolver
 
                 $directory = realpath($root.DIRECTORY_SEPARATOR.$path);
 
-                if ($directory === false || ! str_starts_with($directory.DIRECTORY_SEPARATOR, $root.DIRECTORY_SEPARATOR)) {
+                if ($directory === false || ! Files::within($directory, $root)) {
                     $diagnostics[] = Diagnostic::error(sprintf('Package [%s] pool path [%s] does not exist inside the package.', $name, $path));
 
                     continue;

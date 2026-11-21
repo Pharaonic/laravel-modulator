@@ -86,11 +86,11 @@ final class PublishModule
             }
         }
 
-        if ($poolRoot === null || ! str_starts_with($source->path, $poolRoot.DIRECTORY_SEPARATOR)) {
+        if ($poolRoot === null || ! Files::within($source->path, $poolRoot) || Files::within($poolRoot, $source->path)) {
             throw new RuntimeException(sprintf('Cannot locate module [%s] inside its pool [%s].', $id, $source->pool));
         }
 
-        $relative = substr($source->path, strlen($poolRoot) + 1);
+        $relative = substr(Files::normalize($source->path), strlen(Files::normalize($poolRoot)) + 1);
         $destination = rtrim($target['path'], '/\\').DIRECTORY_SEPARATOR.$relative;
 
         foreach (explode(DIRECTORY_SEPARATOR, $relative) as $segment) {

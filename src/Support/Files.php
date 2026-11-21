@@ -106,7 +106,52 @@ final class Files
             return false;
         }
 
-        return $path === $directory || str_starts_with($path, rtrim($directory, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
+        return self::within($path, $directory);
+    }
+
+    /**
+     * Whether $path is $directory or lies inside it, comparing the strings only:
+     * both separators are accepted, and Windows paths compare case-insensitively.
+     */
+    public static function within(string $path, string $directory): bool
+    {
+        $path = self::comparable($path);
+        $directory = self::comparable($directory);
+
+        return $path === $directory || str_starts_with($path, $directory.DIRECTORY_SEPARATOR);
+    }
+
+    /**
+     * The path with the platform separator and no trailing separator.
+     */
+    public static function normalize(string $path): string
+    {
+        $normalized = rtrim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+
+        return $normalized === '' ? $path : $normalized;
+    }
+
+    /**
+     * $path relative to $base with "/" separators, for output; $path itself
+     * (normalized) when it is outside $base.
+     */
+    public static function relative(string $path, string $base): string
+    {
+        $normalized = self::normalize($path);
+        $root = self::normalize($base);
+
+        if (! self::within($normalized, $root) || self::comparable($normalized) === self::comparable($root)) {
+            return $normalized;
+        }
+
+        return str_replace(DIRECTORY_SEPARATOR, '/', substr($normalized, strlen($root) + 1));
+    }
+
+    private static function comparable(string $path): string
+    {
+        $path = self::normalize($path);
+
+        return DIRECTORY_SEPARATOR === '\\' ? strtolower($path) : $path;
     }
 
     /**

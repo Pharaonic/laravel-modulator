@@ -7,6 +7,7 @@ namespace Pharaonic\Laravel\Modulator\Console\Architecture;
 use Illuminate\Console\Command;
 use Pharaonic\Laravel\Modulator\Actions\CheckBoundaries;
 use Pharaonic\Laravel\Modulator\Concerns\ResolvesModules;
+use Pharaonic\Laravel\Modulator\Support\Files;
 
 final class CheckCommand extends Command
 {
@@ -54,10 +55,8 @@ final class CheckCommand extends Command
             return 0;
         }
 
-        $base = rtrim($this->laravel->basePath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-
         foreach ($violations as $violation) {
-            $file = str_starts_with($violation['file'], $base) ? substr($violation['file'], strlen($base)) : $violation['file'];
+            $file = Files::relative($violation['file'], $this->laravel->basePath());
             $this->error(sprintf('  %s:%d', $file, $violation['line']));
             $this->line('  '.$violation['message']);
         }

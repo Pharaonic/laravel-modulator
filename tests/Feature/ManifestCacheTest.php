@@ -14,7 +14,7 @@ class ManifestCacheTest extends TestCase
 
     private function manifest(): string
     {
-        return $this->base.'/bootstrap/cache/modulator.php';
+        return $this->base.DIRECTORY_SEPARATOR.'bootstrap'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'modulator.php';
     }
 
     /**
