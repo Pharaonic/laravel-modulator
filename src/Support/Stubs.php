@@ -8,8 +8,9 @@ use RuntimeException;
 
 /**
  * Finds and renders generator stubs. A stub in the custom directory
- * (`pharaonic.modulator.generation.stubs`) replaces the package stub with the
- * same name, e.g. "controller.stub" or "module/provider.stub".
+ * (`pharaonic.modulator.generation.stubs`, or `stubs/modulator` when that is
+ * null and the directory exists) replaces the package stub with the same name,
+ * e.g. "controller.stub" or "module/provider.stub".
  *
  * @internal
  */
@@ -21,10 +22,23 @@ final class Stubs
 
     /**
      * @param  mixed  $custom  The `generation.stubs` value.
+     * @param  string|null  $published  The directory `vendor:publish --tag=modulator-stubs` writes to, used when $custom is null.
      */
-    public static function fromConfig($custom): self
+    public static function fromConfig($custom, ?string $published = null): self
     {
-        return new self(is_string($custom) && $custom !== '' ? rtrim($custom, '/\\') : null);
+        if (is_string($custom) && $custom !== '') {
+            return new self(rtrim($custom, '/\\'));
+        }
+
+        return new self($published !== null && is_dir($published) ? $published : null);
+    }
+
+    /**
+     * The directory of the package stubs.
+     */
+    public static function packagePath(): string
+    {
+        return dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'stubs';
     }
 
     public function path(string $name): string
@@ -33,7 +47,7 @@ final class Stubs
             return $file;
         }
 
-        return dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'stubs'.DIRECTORY_SEPARATOR.$name;
+        return self::packagePath().DIRECTORY_SEPARATOR.$name;
     }
 
     /**

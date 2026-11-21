@@ -73,7 +73,7 @@ final class MakeModule
         }
 
         $namespace = trim($pool['namespace'], '\\').'\\'.Identity::namespace($id);
-        $stubs = Stubs::fromConfig($this->config->get('pharaonic.modulator.generation.stubs'));
+        $stubs = Stubs::fromConfig($this->config->get('pharaonic.modulator.generation.stubs'), $this->app->basePath('stubs'.DIRECTORY_SEPARATOR.'modulator'));
 
         Files::locked($this->app->storagePath(), 'make', function () use ($id, $target, $stubs, $namespace, $plain): void {
             $this->create($id, $target, $stubs, $namespace, $plain);

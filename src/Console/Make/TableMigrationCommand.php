@@ -105,7 +105,7 @@ abstract class TableMigrationCommand extends Command
         ], $this->replacements($config));
 
         $file = $directory.DIRECTORY_SEPARATOR.date('Y_m_d_His').'_'.$name.'.php';
-        $stubs = Stubs::fromConfig($config->get('pharaonic.modulator.generation.stubs'));
+        $stubs = Stubs::fromConfig($config->get('pharaonic.modulator.generation.stubs'), $this->laravel->basePath('stubs'.DIRECTORY_SEPARATOR.'modulator'));
 
         try {
             Files::put($file, $stubs->render($this->stub, $replace), false);

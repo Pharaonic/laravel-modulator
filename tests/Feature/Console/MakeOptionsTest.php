@@ -45,6 +45,21 @@ class MakeOptionsTest extends TestCase
         }
     }
 
+    public function test_published_stubs_are_used_without_configuration(): void
+    {
+        $this->assertSame(0, $this->command('vendor:publish', ['--tag' => 'modulator-stubs'])[0]);
+        $this->assertFileExists($this->base.'/stubs/modulator/controller.stub');
+        $this->assertFileExists($this->base.'/stubs/modulator/module/provider.stub');
+
+        $this->write('stubs/modulator/service.stub', "<?php\n\nnamespace {{ namespace }};\n\nclass {{ class }} // published\n{\n}\n");
+        $this->make('service', ['name' => 'Pricing']);
+        $this->assertStringContainsString('// published', $this->file('app/Services/Pricing.php'));
+
+        $this->reload(['generation' => ['pool' => 'local', 'stubs' => $this->base.'/elsewhere']]);
+        $this->make('service', ['name' => 'Billing']);
+        $this->assertStringNotContainsString('// published', $this->file('app/Services/Billing.php'), 'A configured directory wins over stubs/modulator.');
+    }
+
     public function test_pest_is_refused_when_it_is_not_installed(): void
     {
         foreach ([['test', ['name' => 'PriceTest', '--pest' => true]], ['controller', ['name' => 'PriceController', '--pest' => true]]] as [$type, $parameters]) {

@@ -66,7 +66,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | The pool new and published modules are written to, and an optional
-    | directory of custom stubs.
+    | directory of custom stubs. When "stubs" is null, stubs/modulator is used
+    | if it exists (php artisan vendor:publish --tag=modulator-stubs).
     |
     */
 

@@ -83,6 +83,11 @@ final class ModulatorServiceProvider extends ServiceProvider
             __DIR__.'/../config/modulator.php' => $this->app->configPath('pharaonic'.DIRECTORY_SEPARATOR.'modulator.php'),
         ], ['pharaonic', 'laravel-modulator', 'pharaonic-config', 'modulator-config', 'config', 'modulator']);
 
+        // Stubs are an opt-in customization, so they are not in the "pharaonic" and "laravel-modulator" tags.
+        $this->publishes([
+            Support\Stubs::packagePath() => $this->app->basePath('stubs'.DIRECTORY_SEPARATOR.'modulator'),
+        ], ['modulator-stubs', 'pharaonic-stubs']);
+
         $this->commands([
             // Architecture
             Console\Architecture\CheckCommand::class,

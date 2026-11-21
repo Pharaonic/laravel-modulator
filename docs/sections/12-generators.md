@@ -69,14 +69,22 @@ Generators never write into package modules. Publish the module first with `modu
 
 ### Custom Stubs
 
-Point `generation.stubs` at a directory; a file there replaces the package stub with the same name (`controller.stub`, `model.stub`, `module/provider.stub`, `module/routes-web.stub`, ...). Stubs you do not copy keep coming from the package.
+Publish the package stubs to `stubs/modulator`, then edit the ones you want. A file there replaces the package stub with the same name (`controller.stub`, `model.stub`, `module/provider.stub`, `module/routes-web.stub`, ...); delete the ones you keep as they are, and they keep coming from the package.
+
+```bash title="Terminal" no-line-numbers
+php artisan vendor:publish --tag=modulator-stubs
+```
+
+`stubs/modulator` is used automatically while `generation.stubs` is `null`. To keep the stubs elsewhere, point `generation.stubs` at that directory:
 
 ```php title="config/pharaonic/modulator.php"
 'generation' => [
     'pool' => 'local',
-    'stubs' => base_path('stubs/modulator'),
+    'stubs' => base_path('resources/stubs/modules'),
 ],
 ```
+
+The `modulator-stubs` and `pharaonic-stubs` tags publish the stubs; the `pharaonic` and `laravel-modulator` tags do not, so publishing a package's files never adds them.
 
 ```php title="stubs/modulator/service.stub"
 <?php

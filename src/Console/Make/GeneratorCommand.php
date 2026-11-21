@@ -107,7 +107,7 @@ abstract class GeneratorCommand extends Command
                 throw new RuntimeException('--pest needs Pest, and vendor/bin/pest does not exist. Install pestphp/pest, or leave --pest out for a PHPUnit test.');
             }
 
-            $created = $this->generate($module, $segments, Stubs::fromConfig($config->get('pharaonic.modulator.generation.stubs')), $config);
+            $created = $this->generate($module, $segments, Stubs::fromConfig($config->get('pharaonic.modulator.generation.stubs'), $this->laravel->basePath('stubs'.DIRECTORY_SEPARATOR.'modulator')), $config);
         } catch (RuntimeException $e) {
             $this->error($e->getMessage());
 

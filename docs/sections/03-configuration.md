@@ -39,7 +39,7 @@ return [
 | `pools` | `local`, `app` | Directories that hold modules. Each pool has a `path`, a `namespace` root, a `priority`, and optionally `legacy => true` (1.x layout). A pool may also be the class name of a `Pharaonic\Laravel\Modulator\Contracts\Pool`. |
 | `discovery.cache` | `true` | Keep the discovery result in `bootstrap/cache/modulator.php`. |
 | `generation.pool` | `local` | The pool `module:make` and `module:publish` write to. It must be an application pool with the `app/` layout. |
-| `generation.stubs` | `null` | A directory of stubs that replace the package stubs with the same name. |
+| `generation.stubs` | `null` | A directory of stubs that replace the package stubs with the same name. When `null`, `stubs/modulator` is used if it exists. |
 
 :::info
 A pool namespace is the namespace root of its modules: `Modules/Shop/app/Models/Product.php` in the `local` pool is `Modules\Shop\Models\Product`. `app/` never appears in the namespace.
