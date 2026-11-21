@@ -7,6 +7,7 @@ namespace Pharaonic\Laravel\Modulator\Console\Make;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\Str;
 use Pharaonic\Laravel\Modulator\Module;
+use Pharaonic\Laravel\Modulator\Support\FilamentComponents;
 use Pharaonic\Laravel\Modulator\Support\FilamentSchema;
 use Pharaonic\Laravel\Modulator\Support\Stubs;
 use RuntimeException;
@@ -15,7 +16,9 @@ use Throwable;
 
 /**
  * module:make:filament-resource: Filament's make:filament-resource, written
- * into a module (app/Filament/Resources), for a model of the module.
+ * into a module (app/Filament/Resources, or app/Filament/<PanelId>/Resources),
+ * for a model of the module. Filament 3 gets the package's stubs; Filament 4
+ * and later run Filament's own command into the module folder.
  */
 final class FilamentResourceMakeCommand extends GeneratorCommand
 {
@@ -41,6 +44,7 @@ final class FilamentResourceMakeCommand extends GeneratorCommand
             ['view', null, InputOption::VALUE_NONE, 'Add a view page'],
             ['soft-deletes', null, InputOption::VALUE_NONE, 'Show, restore and force-delete soft-deleted records'],
             ['generate', 'G', InputOption::VALUE_NONE, 'Generate the form and table from the model\'s database columns'],
+            ['panel', null, InputOption::VALUE_REQUIRED, 'The panel, when it is not the default one: the resource goes to Filament/<PanelId>/Resources'],
         ];
     }
 
@@ -52,14 +56,108 @@ final class FilamentResourceMakeCommand extends GeneratorCommand
     }
 
     /**
-     * The name is the model ("Product" or "ProductResource"): the class is "<Model>Resource".
+     * The name is the model ("Product" or "ProductResource"): the class is "<Model>Resource",
+     * in the Filament folder of the panel.
      */
     protected function generate(Module $module, array $segments, Stubs $stubs, Repository $config): array
     {
-        $last = (string) array_pop($segments);
-        $segments[] = Str::studly((string) preg_replace('/Resource$/', '', $last)).'Resource';
+        $model = Str::studly((string) preg_replace('/Resource$/', '', (string) array_pop($segments)));
+        [$panel, $default] = $this->panel();
+        $directory = $default ? '' : Str::studly($panel).'\\';
+
+        if (FilamentComponents::discovers()) {
+            return $this->generateWithFilament($module, $segments, $model, $panel, $directory);
+        }
+
+        $this->directory = 'Filament\\'.$directory.'Resources';
+        $segments[] = $model.'Resource';
 
         return parent::generate($module, $segments, $stubs, $config);
+    }
+
+    /**
+     * Filament 4 and later: Filament's own make:filament-resource, into the
+     * module folder the panel discovers, so the resource is what that Filament
+     * release writes.
+     *
+     * @param  list<string>  $segments
+     * @return list<string>
+     *
+     * @throws RuntimeException
+     */
+    private function generateWithFilament(Module $module, array $segments, string $model, string $panel, string $directory): array
+    {
+        $class = $this->modelOption();
+        $modelNamespace = $module->namespace().'\\Models';
+        $modelPath = implode('/', array_merge($segments, [$model]));
+
+        if ($class !== null) {
+            $class = ltrim($class, '\\');
+
+            if (class_basename($class) !== $model || $segments !== []) {
+                throw new RuntimeException(sprintf('Filament names the resource after its model: name it [%sResource] for --model=%s.', class_basename($class), $class));
+            }
+
+            $modelNamespace = Str::beforeLast($class, '\\');
+            $modelPath = $model;
+        }
+
+        $parameters = [
+            'model' => $modelPath,
+            '--model-namespace' => $modelNamespace,
+            '--resource-namespace' => $module->namespace().'\\Filament\\'.$directory.'Resources',
+            '--panel' => $panel,
+            '--no-interaction' => true,
+        ];
+
+        foreach (['simple', 'view', 'soft-deletes', 'generate'] as $option) {
+            if ($this->option($option)) {
+                $parameters['--'.$option] = true;
+            }
+        }
+
+        if ($this->call('make:filament-resource', $parameters) !== 0) {
+            throw new RuntimeException('make:filament-resource could not write the resource.');
+        }
+
+        return [];
+    }
+
+    /**
+     * The panel id (--panel, or the default panel) and whether it is the default one.
+     *
+     * @return array{0: string, 1: bool}
+     *
+     * @throws RuntimeException
+     */
+    private function panel(): array
+    {
+        $id = $this->stringOption('panel', '');
+        $filament = $this->laravel->bound('filament') ? $this->laravel->make('filament') : null;
+        $panels = is_object($filament) && method_exists($filament, 'getPanels') ? (array) $filament->getPanels() : [];
+
+        if ($panels === []) {
+            return [$id, $id === ''];
+        }
+
+        foreach ($panels as $panel) {
+            if (! is_object($panel) || ! method_exists($panel, 'getId') || ! method_exists($panel, 'isDefault')) {
+                continue;
+            }
+
+            $default = (bool) $panel->isDefault();
+            $panelId = $panel->getId();
+
+            if (is_string($panelId) && ($id === '' ? $default : $panelId === $id)) {
+                return [$panelId, $default];
+            }
+        }
+
+        if ($id === '') {
+            throw new RuntimeException('Filament has no default panel: give the panel with --panel=.');
+        }
+
+        throw new RuntimeException(sprintf('Filament has no panel [%s].', $id));
     }
 
     protected function build(Module $module, string $class, array $segments, array $replace, Repository $config): array
