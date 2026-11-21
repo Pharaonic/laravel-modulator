@@ -14,6 +14,7 @@ Modules/
 │   ├── tests/
 │   ├── helpers.php               optional
 │   ├── module.php                optional
+│   ├── module.lock               only in a published copy (module:publish)
 │   └── Modules/                  only when it has child modules
 │       └── Orders/app/           Shop/Orders → Modules\Shop\Orders\
 └── Platform/                     namespace group (no app/)

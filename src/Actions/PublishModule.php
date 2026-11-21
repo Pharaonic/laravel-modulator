@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace Pharaonic\Laravel\Modulator\Actions;
 
-use FilesystemIterator;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use Pharaonic\Laravel\Modulator\Discovery\Source;
 use Pharaonic\Laravel\Modulator\ModuleRegistry;
 use Pharaonic\Laravel\Modulator\Support\Files;
 use Pharaonic\Laravel\Modulator\Support\Identity;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
+use Pharaonic\Laravel\Modulator\Support\ModuleLock;
 use RuntimeException;
-use SplFileInfo;
 use Throwable;
 
 /**
@@ -23,7 +20,9 @@ use Throwable;
  *
  * The package is only read. The copy is assembled in a private workspace
  * under storage/framework/modulator, then moved into place; a replaced local
- * copy is kept as a backup and restored if anything fails.
+ * copy is kept as a backup and restored if anything fails. The copy gets a
+ * module.lock (package, version, file hashes), so module:doctor can report
+ * what the package changed since.
  *
  * @internal
  */
@@ -33,10 +32,13 @@ final class PublishModule
 
     private string $storage;
 
+    private string $vendor;
+
     public function __construct(Application $app)
     {
         $this->files = new Filesystem;
         $this->storage = $app->storagePath();
+        $this->vendor = $app->basePath('vendor');
     }
 
     /**
@@ -99,8 +101,8 @@ final class PublishModule
             }
         }
 
-        $incoming = $this->hashes($source->path, $withChildren);
-        $existing = is_dir($destination) ? $this->hashes($destination, $withChildren) : [];
+        $incoming = ModuleLock::hashes($source->path, $withChildren);
+        $existing = is_dir($destination) ? ModuleLock::hashes($destination, $withChildren) : [];
 
         $added = array_keys(array_diff_key($incoming, $existing));
         $removed = array_keys(array_diff_key($existing, $incoming));
@@ -148,7 +150,7 @@ final class PublishModule
         $target = $plan['target'];
 
         try {
-            foreach (array_keys($this->hashes($plan['source']->path, $withChildren)) as $file) {
+            foreach (array_keys(ModuleLock::hashes($plan['source']->path, $withChildren)) as $file) {
                 $to = $temporary.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $file);
                 $this->files->ensureDirectoryExists(dirname($to), 0755, true);
 
@@ -160,6 +162,17 @@ final class PublishModule
             if (! is_dir($temporary.DIRECTORY_SEPARATOR.'app')) {
                 throw new RuntimeException('The published copy has no app/ directory.');
             }
+
+            $source = $plan['source'];
+            $installed = ModuleLock::installed($this->vendor, (string) $source->package);
+            Files::put($temporary.DIRECTORY_SEPARATOR.ModuleLock::FILE, ModuleLock::encode(
+                $source->id,
+                (string) $source->package,
+                $installed['version'],
+                $installed['reference'],
+                $withChildren,
+                ModuleLock::hashes($source->path, $withChildren)
+            ));
 
             if (is_dir($target)) {
                 $backup = $workspace.DIRECTORY_SEPARATOR.'backups'.DIRECTORY_SEPARATOR.Identity::slug($plan['source']->id).'-'.date('Ymd-His').'-'.bin2hex(random_bytes(3));
@@ -192,35 +205,5 @@ final class PublishModule
         }
 
         return $backup;
-    }
-
-    /**
-     * Relative file path (with "/") => SHA-1, sorted.
-     *
-     * @return array<string, string>
-     */
-    private function hashes(string $root, bool $withChildren): array
-    {
-        $hashes = [];
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS));
-
-        /** @var SplFileInfo $file */
-        foreach ($iterator as $file) {
-            if (! $file->isFile()) {
-                continue;
-            }
-
-            $relative = str_replace(DIRECTORY_SEPARATOR, '/', substr($file->getPathname(), strlen($root) + 1));
-
-            if (! $withChildren && str_starts_with($relative, 'Modules/')) {
-                continue;
-            }
-
-            $hashes[$relative] = (string) sha1_file($file->getPathname());
-        }
-
-        ksort($hashes, SORT_STRING);
-
-        return $hashes;
     }
 }

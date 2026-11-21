@@ -11,6 +11,8 @@ use Pharaonic\Laravel\Modulator\Autoload\Autoloader;
 use Pharaonic\Laravel\Modulator\Discovery\Manifest;
 use Pharaonic\Laravel\Modulator\ModuleRegistry;
 use Pharaonic\Laravel\Modulator\Support\Diagnostic;
+use Pharaonic\Laravel\Modulator\Support\ModuleLock;
+use RuntimeException;
 
 /**
  * Everything module:doctor checks: a fresh discovery (sources, states,
@@ -40,6 +42,7 @@ final class DiagnoseModules
             $registry->diagnostics(),
             $this->cache($fresh),
             $this->providers($registry),
+            $this->publishedCopies($registry),
             $this->configurationCache()
         );
 
@@ -113,6 +116,90 @@ final class DiagnoseModules
         }
 
         return $diagnostics;
+    }
+
+    /**
+     * Local copies made by module:publish whose package changed since: their
+     * module.lock records the package version and the hash of every copied file.
+     *
+     * @return list<Diagnostic>
+     */
+    private function publishedCopies(ModuleRegistry $registry): array
+    {
+        $diagnostics = [];
+
+        foreach ($registry->all() as $id => $module) {
+            $source = $module->source();
+
+            if ($source->package !== null) {
+                continue;
+            }
+
+            try {
+                $lock = ModuleLock::read($source->path);
+            } catch (RuntimeException $e) {
+                $diagnostics[] = Diagnostic::warning($e->getMessage(), $id);
+
+                continue;
+            }
+
+            if ($lock === null) {
+                continue;
+            }
+
+            $package = null;
+
+            foreach ($registry->sources($id) as $candidate) {
+                if ($candidate->package === $lock['package']) {
+                    $package = $candidate;
+                }
+            }
+
+            if ($package === null) {
+                $diagnostics[] = Diagnostic::warning(sprintf('[%s] was published from [%s], which no longer provides it. The local copy is now the only one; delete its %s to stop this check.', $id, $lock['package'], ModuleLock::FILE), $id);
+
+                continue;
+            }
+
+            $changes = ModuleLock::compare(
+                $lock,
+                ModuleLock::hashes($source->path, $lock['children']),
+                ModuleLock::hashes($package->path, $lock['children'])
+            );
+
+            if ($changes['package'] === [] && $changes['both'] === []) {
+                continue;
+            }
+
+            $installed = ModuleLock::installed($this->app->basePath('vendor'), $lock['package']);
+            $message = sprintf(
+                '[%s] was published from %s %s, and the package (now %s) changed since: %s.',
+                $id,
+                $lock['package'],
+                $lock['version'] ?? '(unknown version)',
+                $installed['version'] ?? 'unknown',
+                $this->list(array_merge($changes['package'], $changes['both']))
+            );
+
+            if ($changes['both'] !== []) {
+                $message .= sprintf(' Changed in both the package and your copy: %s.', $this->list($changes['both']));
+            }
+
+            $diagnostics[] = Diagnostic::warning($message.sprintf(' Compare them, then bring the changes into your copy, or run "php artisan module:publish %s --force" to take the package version (your copy is kept as a backup).', $id), $id);
+        }
+
+        return $diagnostics;
+    }
+
+    /**
+     * @param  list<string>  $files
+     */
+    private function list(array $files): string
+    {
+        sort($files, SORT_STRING);
+        $shown = array_slice($files, 0, 10);
+
+        return implode(', ', $shown).(count($files) > 10 ? sprintf(' and %d more', count($files) - 10) : '');
     }
 
     /**

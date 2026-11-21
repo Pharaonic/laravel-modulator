@@ -14,6 +14,7 @@ class PublishCommandTest extends TestCase
 
         $this->write('vendor/composer/installed.json', (string) json_encode(['packages' => [[
             'name' => 'acme/kiosk',
+            'pretty_version' => '1.0.0',
             'install-path' => '../acme/kiosk',
             'extra' => ['pharaonic' => ['modulator' => ['pools' => [['path' => 'modules']]]]],
         ]]]));
@@ -43,6 +44,41 @@ class PublishCommandTest extends TestCase
         $this->assertSame('local', Modules::find('Kiosk')->pool());
         $this->assertSame('acme/kiosk', Modules::find('Kiosk/Printer')->pool());
         $this->assertSame('Kiosk', Modules::find('Kiosk')->id(), 'The identity is preserved.');
+    }
+
+    public function test_the_lock_tells_what_the_package_changed_since_the_copy(): void
+    {
+        $this->artisan('module:publish', ['module' => 'Kiosk'])->assertExitCode(0);
+
+        $lock = json_decode((string) file_get_contents($this->local('module.lock')), true);
+        $this->assertSame('Kiosk', $lock['module']);
+        $this->assertSame('acme/kiosk', $lock['package']);
+        $this->assertSame('1.0.0', $lock['version']);
+        $this->assertFalse($lock['children']);
+        $this->assertSame(['app/Screen.php', 'routes/web.php'], array_keys($lock['files']));
+
+        $this->reload();
+        [, $output] = $this->command('module:source', ['module' => 'Kiosk']);
+        $this->assertStringContainsString('Published: from acme/kiosk 1.0.0', $output);
+        $this->assertStringNotContainsString('was published from', $this->command('module:doctor')[1], 'An untouched copy is fine.');
+
+        $this->write('Modules/Kiosk/app/Screen.php', '<?php namespace Modules\\Kiosk; class Screen { /* local */ }');
+        $this->assertStringNotContainsString('was published from', $this->command('module:doctor')[1], 'Local edits alone are the point of a copy.');
+
+        $this->write('vendor/acme/kiosk/modules/Kiosk/routes/web.php', "<?php Route::get('kiosk', function () { return 'kiosk 2'; });");
+        $this->write('vendor/acme/kiosk/modules/Kiosk/app/Screen.php', '<?php namespace Modules\\Kiosk; class Screen { /* 2.0 */ }');
+        $this->write('vendor/acme/kiosk/modules/Kiosk/app/Ticket.php', '<?php namespace Modules\\Kiosk; class Ticket {}');
+        $installed = json_decode((string) file_get_contents($this->base.'/vendor/composer/installed.json'), true);
+        $installed['packages'][0]['pretty_version'] = '2.0.0';
+        $this->write('vendor/composer/installed.json', (string) json_encode($installed));
+
+        [, $output] = $this->command('module:doctor');
+        $this->assertStringContainsString('[Kiosk] was published from acme/kiosk 1.0.0, and the package (now 2.0.0) changed since: app/Screen.php, app/Ticket.php, routes/web.php.', $output);
+        $this->assertStringContainsString('Changed in both the package and your copy: app/Screen.php.', $output);
+
+        $this->artisan('module:publish', ['module' => 'Kiosk', '--force' => true])->assertExitCode(0);
+        $this->assertSame('2.0.0', json_decode((string) file_get_contents($this->local('module.lock')), true)['version']);
+        $this->assertStringNotContainsString('was published from', $this->command('module:doctor')[1], 'Publishing again resets the lock.');
     }
 
     public function test_children_are_published_on_request(): void

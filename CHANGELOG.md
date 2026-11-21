@@ -14,6 +14,7 @@ All notable changes to this project are documented here.
 - Autoloading without Composer changes: module class maps built at discovery and PSR-4 prefixes, verified with the default, optimized (`-o`) and authoritative (`-a`) Composer autoloaders.
 - Detection of Composer mappings that would load a shadowed copy of a module class.
 - Module resources loaded the Laravel way: provider `Providers/<Name>ServiceProvider`, `config/`, views, translations (including JSON), migrations and `routes/web.php` / `routes/api.php`, with each route tagged with its module.
+- `module:publish` writes a `module.lock` (package, version, file hashes) into the copy; `module:doctor` reports the files the package changed since, and the ones changed on both sides, and `module:source` shows where the copy came from.
 - `vendor:publish --tag=modulator-stubs` publishes the generator stubs to `stubs/modulator`, which is used while `generation.stubs` is `null`.
 - `module:routes` keeps the 1.x `--compact`, `--columns`, `--sort` and `--reverse` options, and `module:migrate:refresh` keeps `--seeder`, now also on `module:migrate`.
 - `--pest` fails, and writes nothing, when `vendor/bin/pest` does not exist, instead of writing a test that cannot run.

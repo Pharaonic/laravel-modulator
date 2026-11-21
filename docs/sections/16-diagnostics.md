@@ -8,7 +8,7 @@ Checks source collisions, discovery and cache state, statuses, dependencies, pro
 php artisan module:doctor
 ```
 
-It reports, among others: equal-priority sources, invalid identities, missing or cyclic dependencies, a cached manifest that is out of date (an error when Composer's class map is authoritative), providers in `app/Providers` that are not registered automatically, a conventional provider file that does not declare its class, Composer mappings to shadowed copies, discovery caching off in production, and a config file changed after `config:cache`.
+It reports, among others: equal-priority sources, invalid identities, missing or cyclic dependencies, a cached manifest that is out of date (an error when Composer's class map is authoritative), providers in `app/Providers` that are not registered automatically, a conventional provider file that does not declare its class, Composer mappings to shadowed copies, published copies whose package changed since (`module.lock`), discovery caching off in production, and a config file changed after `config:cache`.
 
 ### module:graph
 

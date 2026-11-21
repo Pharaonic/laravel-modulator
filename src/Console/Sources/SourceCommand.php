@@ -8,6 +8,8 @@ use Illuminate\Console\Command;
 use InvalidArgumentException;
 use Pharaonic\Laravel\Modulator\Concerns\ResolvesModules;
 use Pharaonic\Laravel\Modulator\Support\Identity;
+use Pharaonic\Laravel\Modulator\Support\ModuleLock;
+use RuntimeException;
 
 final class SourceCommand extends Command
 {
@@ -78,6 +80,17 @@ final class SourceCommand extends Command
             ));
         } else {
             $this->line(sprintf('Reason:  pool [%s] is the only source.', $module->pool()));
+        }
+
+        try {
+            $lock = ModuleLock::read($module->source()->path);
+        } catch (RuntimeException $e) {
+            $lock = null;
+            $this->warn($e->getMessage());
+        }
+
+        if ($lock !== null) {
+            $this->line(sprintf('Published: from %s %s (%s). module:doctor reports what the package changed since.', $lock['package'], $lock['version'] ?? '(unknown version)', ModuleLock::FILE));
         }
 
         return 0;
