@@ -24,6 +24,7 @@ use ReflectionClass;
  * - routes/web.php ("web" middleware) and routes/api.php ("api" middleware, "api" prefix),
  *   each route tagged with the module identity in its action ("module").
  *
+ * - with Livewire installed, the components of app/Http/Livewire ("<slug>::<name>");
  * - in the console, the commands of app/Console/Commands and routes/console.php;
  * - on Laravel 6 and 7, the closure factories of database/factories.
  *
@@ -89,6 +90,7 @@ final class ModuleResources extends ServiceProvider
         }
 
         $this->loadClosureFactories();
+        LivewireComponents::register($this->app, $this->module, $this->classes);
 
         if ($legacy) {
             $this->bootLegacyConsole();

@@ -125,6 +125,7 @@ final class ModulatorServiceProvider extends ServiceProvider
             Console\Make\JobMakeCommand::class,
             Console\Make\JobMiddlewareMakeCommand::class,
             Console\Make\ListenerMakeCommand::class,
+            Console\Make\LivewireMakeCommand::class,
             Console\Make\MailMakeCommand::class,
             Console\Make\MiddlewareMakeCommand::class,
             Console\Make\MigrationMakeCommand::class,

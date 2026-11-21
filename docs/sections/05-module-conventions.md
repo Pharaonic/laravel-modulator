@@ -55,3 +55,23 @@ if (! function_exists('shop_currency')) {
 - Functions are global. Prefix them with the module slug and wrap each one in `function_exists()`, so two modules cannot collide with a fatal "Cannot redeclare" error.
 - The file loads after the application's config files, so a helper cannot be used inside `config/*.php`. It is available in providers, routes, views and everything after them.
 - Disabling a module stops loading its helpers the next time the application boots. A function already defined in a running process (a queue worker, Octane) stays until it restarts.
+
+### Livewire Components
+
+With `livewire/livewire` installed (Livewire 2), the components in a module's `app/Http/Livewire` are registered for you, named after the module slug. Nothing to configure, and nothing happens without Livewire.
+
+| Class | Name |
+| --- | --- |
+| `Modules\Shop\Http\Livewire\Cart` | `shop::cart` |
+| `Modules\Shop\Http\Livewire\Admin\UserTable` | `shop::admin.user-table` |
+| `Modules\Shop\Orders\Http\Livewire\OrderList` | `shop-orders::order-list` |
+
+```blade title="Blade"
+<livewire:shop::cart />
+@livewire('shop::admin.user-table')
+```
+
+- Only enabled modules register components; abstract classes and classes that are not `Livewire\Component` are skipped.
+- The classes come from the module class map, so a cached manifest (`module:cache`) needs no scan.
+- Create one with `module:make:livewire` (see Generators).
+

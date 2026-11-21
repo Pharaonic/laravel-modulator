@@ -1,0 +1,15 @@
+<?php
+
+namespace {{ testNamespace }};
+
+use Livewire\Livewire;
+use {{ namespacedComponent }};
+use Tests\TestCase;
+
+class {{ testClass }} extends TestCase
+{
+    public function test_the_component_can_render(): void
+    {
+        Livewire::test({{ class }}::class)->assertStatus(200);
+    }
+}
