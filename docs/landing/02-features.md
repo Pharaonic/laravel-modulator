@@ -23,4 +23,7 @@ items:
   - icon: shield-check
     title: Safe By Default
     text: "`module:enable` edits your config in place, `module:delete` confirms, and `module:migrate:fresh` never drops your database."
+  - icon: bot
+    title: AI Ready
+    text: "Ships a Laravel Boost guideline and a `modulator-development` skill, so `php artisan boost:install` teaches Claude Code, Cursor, Codex or Copilot the module layout and every `module:*` command."
 ---

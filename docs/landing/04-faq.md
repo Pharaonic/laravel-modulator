@@ -30,6 +30,10 @@ Yes. The package declares its pools under `extra.pharaonic.modulator.pools` in i
 
 Yes. Modules in `app/Modules` are discovered by the `app` pool with the 1.x rules. The documentation has an upgrade guide for moving them to the new layout.
 
+## Is {package.name} AI ready?
+
+Yes. It ships a Laravel Boost guideline and a `modulator-development` skill. Run `php artisan boost:install` in an application that uses Laravel Boost, and your coding agent (Claude Code, Cursor, Codex, Copilot…) learns the module layout, the `module:*` commands and the integrations.
+
 ## Is {package.name} free to use?
 
 Yes. {package.name} is open source under the {package.license} license, so you can use it in personal and commercial projects.
