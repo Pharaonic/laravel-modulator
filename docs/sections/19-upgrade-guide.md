@@ -1,10 +1,10 @@
 ## Upgrading From 1.x
 
-Version 6.0.0 replaces 1.x. Existing `app/Modules` modules keep working through the `app` pool (1.x layout). Move them to the new layout when you want; nothing is rewritten for you.
+Version 7.0.0 replaces 1.x on Laravel 7 (6.0.0 does on Laravel 6). Existing `app/Modules` modules keep working through the `app` pool (1.x layout). Move them to the new layout when you want; nothing is rewritten for you.
 
 ### Required Changes
 
-1. Require the new version: `composer require pharaonic/laravel-modulator:^6.0` (use the line of your Laravel major).
+1. Require the new version: `composer require pharaonic/laravel-modulator:^7.0` (use the line of your Laravel major).
 2. `App\Modules\ServiceProvider` (the base class 1.x generated) must extend `Illuminate\Support\ServiceProvider`: `Core\ServiceProvider` is removed, and Modulator loads module resources itself.
 3. Replace the removed helpers: `modules()` → `Modules::all()`, `getModuleDirectories()` → `Modules::find($id)->children()`, `studlyToSlug()` → `Modules::find($id)->slug()`, `getFiles()` → the `File` facade.
 4. If you published the 1.x config, publish the new one (`--tag=modulator-config`); it lives in `config/pharaonic/modulator.php`.
@@ -12,7 +12,7 @@ Version 6.0.0 replaces 1.x. Existing `app/Modules` modules keep working through 
 
 ### Before And After
 
-| 1.x | 6.0.0 |
+| 1.x | 7.0.0 |
 | --- | --- |
 | `app/Modules/Shop`, `App\Modules\Shop\...` | `Modules/Shop/app`, `Modules\Shop\...` (1.x layout still supported) |
 | A module is a folder with `Providers/` | A module is a folder with `app/` (the `app` pool keeps the 1.x rule) |
@@ -22,7 +22,6 @@ Version 6.0.0 replaces 1.x. Existing `app/Modules` modules keep working through 
 | `module:migrate:fresh` | Removed: use `module:migrate:refresh` |
 | `module:make:translatable` | Removed: use `module:make:model` and `module:make:migration` with the laravel-translatable docs |
 | `module:make:enum` | Not on this line: enums need PHP 8.1, and this line runs on PHP 8.0 |
-| `module:make:cast`, `module:make:component` | Not on this line: custom casts and Blade components need Laravel 7 |
 | `module:routes` by name prefix | By real ownership |
 | `module:seed Shop` → `App\Modules\Shop\database\seeders\DatabaseSeeder` | Same for 1.x modules; `Modules\Shop\Database\Seeders\DatabaseSeeder` for new ones |
 | `modules()`, `getFiles()`, `getModuleDirectories()`, `studlyToSlug()` | Removed |

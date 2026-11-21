@@ -49,6 +49,27 @@ Laravel's `phpunit.xml` only lists `tests/Unit` and `tests/Feature`, so `vendor/
 
 Then `vendor/bin/phpunit` runs everything, and `vendor/bin/phpunit --testsuite Modules` runs only module tests.
 
-:::note
-Pest cannot be installed with Laravel 6: every Pest release needs a newer `nunomaduro/collision` than Laravel 6 allows. On this line, tests are PHPUnit tests, and `--pest` refuses to write a Pest file.
-:::
+Pest reads the same `phpunit.xml`, so `vendor/bin/pest --testsuite Modules` works too.
+
+### Pest
+
+The generators write Pest tests when `vendor/bin/pest` exists, unless you pass `--phpunit`. Laravel 7's skeleton pins `nunomaduro/collision` ^4.3, and Pest 1 needs ^5.11, so install them together:
+
+```bash title="Terminal" no-line-numbers
+composer require --dev nunomaduro/collision:^5.11 pestphp/pest:^1.23 pestphp/pest-plugin-laravel:^1.4 -W
+php artisan pest:install
+```
+
+`tests/Pest.php` binds `Tests\TestCase` to `tests/Feature` only, and module tests live in the module. So a module's Pest feature test binds it itself, and the generators write it that way:
+
+```php title="Modules/Shop/tests/Feature/CartTest.php"
+<?php
+
+uses(Tests\TestCase::class);
+
+test('the cart page answers', function () {
+    $this->get('/cart')->assertOk();
+});
+```
+
+Unit tests (`--unit`) do not. Do not also bind module folders in `tests/Pest.php`: Pest refuses a test case bound twice.

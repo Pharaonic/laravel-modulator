@@ -17,9 +17,11 @@ There is a `module:make:*` command for every `make:*` command of Laravel.
 | Command | Writes to | Options |
 | --- | --- | --- |
 | `module:make:action` | `app/Actions` | |
+| `module:make:cast` | `app/Casts` | `--inbound` |
 | `module:make:channel` | `app/Broadcasting` | |
 | `module:make:class` | `app` | `--invokable` |
 | `module:make:command` | `app/Console/Commands` | `--command=`, tests |
+| `module:make:component` | `app/View/Components` + view | `--inline`, `--view` (anonymous: only the view), `--path=`, tests |
 | `module:make:config` | `config` | |
 | `module:make:controller` | `app/Http/Controllers` | `--api`, `--type=`, `--invokable`, `--model=`, `--parent=`, `--resource`, `--requests`, tests |
 | `module:make:event` | `app/Events` | |
@@ -101,4 +103,4 @@ Tokens: `{{ namespace }}`, `{{ class }}`, `{{ module }}`, `{{ slug }}`, `{{ root
 
 ### Factories
 
-Module models use their module factories with `HasFactory` (Laravel 8+): `Modules\Shop\Models\Product` uses `Modules\Shop\Database\Factories\ProductFactory`. On Laravel 6 and 7, module `database/factories` closures are loaded.
+Module models use their module factories with `HasFactory` (Laravel 8+): `Modules\Shop\Models\Product` uses `Modules\Shop\Database\Factories\ProductFactory`. On Laravel 7, module `database/factories` closures are loaded.
