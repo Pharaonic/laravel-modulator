@@ -58,13 +58,29 @@ final class ModulatorServiceProvider extends ServiceProvider
 
         $autoloader->register($registry, $data['classmap']);
 
+        // One ModuleResources per module, registered and booted here: the
+        // application keeps one provider per class (Laravel 11), so it cannot
+        // hold them itself. They boot before every provider, in module order,
+        // so a module provider always finds its module's resources.
+        $resources = [];
+
         foreach ($registry->enabled() as $module) {
-            $this->app->register(new ModuleResources($this->app, $module, array_keys($data['classmap'][$module->id()] ?? [])), true);
+            $moduleResources = new ModuleResources($this->app, $module, array_keys($data['classmap'][$module->id()] ?? []));
+            $moduleResources->register();
+            $resources[] = $moduleResources;
 
             foreach ($this->providers($module) as $provider) {
                 $this->app->register($provider);
             }
         }
+
+        $this->app->booting(static function () use ($resources): void {
+            foreach ($resources as $moduleResources) {
+                $moduleResources->callBootingCallbacks();
+                $moduleResources->boot();
+                $moduleResources->callBootedCallbacks();
+            }
+        });
     }
 
     public function boot(): void
@@ -197,11 +213,7 @@ final class ModulatorServiceProvider extends ServiceProvider
                 return;
             }
 
-            $manifest = $this->app->make(Manifest::class);
-
-            if (! $manifest instanceof Manifest) {
-                return;
-            }
+            $manifest = Support\Resolve::make($this->app, Manifest::class);
 
             try {
                 if ($event->command === 'optimize') {

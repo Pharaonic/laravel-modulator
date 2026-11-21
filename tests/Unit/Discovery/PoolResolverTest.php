@@ -9,6 +9,7 @@ use Pharaonic\Laravel\Modulator\DirectoryPool;
 use Pharaonic\Laravel\Modulator\Discovery\PoolResolver;
 use Pharaonic\Laravel\Modulator\Tests\Fixtures\TenantPool;
 use Pharaonic\Laravel\Modulator\Tests\Unit\FilesystemTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class PoolResolverTest extends FilesystemTestCase
 {
@@ -42,10 +43,9 @@ class PoolResolverTest extends FilesystemTestCase
     }
 
     /**
-     * @dataProvider invalidPools
-     *
      * @param  mixed  $pools
      */
+    #[DataProvider('invalidPools')]
     public function test_invalid_configured_pools_are_rejected($pools, string $message): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -57,7 +57,7 @@ class PoolResolverTest extends FilesystemTestCase
     /**
      * @return array<string, array{mixed, string}>
      */
-    public function invalidPools(): array
+    public static function invalidPools(): array
     {
         return [
             'not an array' => ['Modules', 'must be an array'],

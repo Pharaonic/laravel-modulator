@@ -46,7 +46,7 @@ PHP);
      */
     private function migration(string $directory, string $date, string $name, string $table): void
     {
-        $name .= '_'.strtolower((string) preg_replace('/[^A-Za-z]/', '', $this->getName(false)));
+        $name .= '_'.strtolower((string) preg_replace('/[^A-Za-z]/', '', $this->name()));
         $class = \Illuminate\Support\Str::studly($name);
 
         $this->write($directory.'/'.$date.'_'.$name.'.php', <<<PHP

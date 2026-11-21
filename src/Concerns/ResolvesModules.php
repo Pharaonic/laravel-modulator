@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Pharaonic\Laravel\Modulator\Concerns;
 
 use InvalidArgumentException;
-use LogicException;
 use Pharaonic\Laravel\Modulator\Module;
 use Pharaonic\Laravel\Modulator\ModuleRegistry;
 use Pharaonic\Laravel\Modulator\Support\Context;
 use Pharaonic\Laravel\Modulator\Support\Identity;
+use Pharaonic\Laravel\Modulator\Support\Resolve;
 
 /**
  * Module argument resolution for commands.
@@ -26,13 +26,7 @@ trait ResolvesModules
 {
     protected function registry(): ModuleRegistry
     {
-        $registry = $this->laravel->make(ModuleRegistry::class);
-
-        if (! $registry instanceof ModuleRegistry) {
-            throw new LogicException('The module registry is not available.');
-        }
-
-        return $registry;
+        return Resolve::make($this->laravel, ModuleRegistry::class);
     }
 
     protected function moduleContext(): Context

@@ -3,6 +3,7 @@
 namespace Pharaonic\Laravel\Modulator\Tests\Unit\Support;
 
 use Pharaonic\Laravel\Modulator\Support\ConfigEditor;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -73,9 +74,7 @@ class ConfigEditorTest extends TestCase
         $this->assertSame("<?php return ['pools' => ['x' => ['disabled' => ['Nested']]], 'disabled' => ['Shop', 'Blog']];", $this->editor->add($code, 'Blog'));
     }
 
-    /**
-     * @dataProvider computedLists
-     */
+    #[DataProvider('computedLists')]
     public function test_computed_lists_are_refused(string $code): void
     {
         $this->expectException(RuntimeException::class);

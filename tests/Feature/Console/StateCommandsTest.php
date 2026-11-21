@@ -5,6 +5,8 @@ namespace Pharaonic\Laravel\Modulator\Tests\Feature\Console;
 use Pharaonic\Laravel\Modulator\Facades\Modules;
 use Pharaonic\Laravel\Modulator\Support\ConfigEditor;
 use Pharaonic\Laravel\Modulator\Tests\TestCase;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
 class StateCommandsTest extends TestCase
 {
@@ -34,11 +36,8 @@ class StateCommandsTest extends TestCase
         return (new ConfigEditor)->read((string) file_get_contents($this->config()));
     }
 
-    /**
-     * @runInSeparateProcess
-     *
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function test_octane_users_are_told_to_reload_it(): void
     {
         // This process only: the lowest Laravel 9 dependencies print PHP 8.1+
