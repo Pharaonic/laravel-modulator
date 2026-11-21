@@ -91,3 +91,32 @@ jobs:
       - name: Run tests
         if: ${{ !(matrix.os == 'ubuntu-latest' && matrix.php == needs.matrix.outputs.lowest && matrix.dependencies == 'highest') }}
         run: composer test
+
+  # The optional integrations (composer.json "suggest") are never in
+  # require-dev: installed here, on the runner only, so their tests run.
+  integrations:
+    name: PHP ${{ needs.matrix.outputs.lowest }} - optional integrations
+    needs: matrix
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ needs.matrix.outputs.lowest }}
+          extensions: fileinfo, pdo_sqlite, sqlite3
+          coverage: none
+          tools: composer:v2
+
+      - name: Install the suggested packages
+        shell: bash
+        run: |
+          packages="$(jq -r '.suggest // {} | keys | join(" ")' composer.json)"
+          [ -n "$packages" ] || exit 0
+          composer require --dev --no-interaction --no-progress --with-all-dependencies $packages
+
+      - name: Run tests
+        run: composer test
