@@ -6,6 +6,7 @@ namespace Pharaonic\Laravel\Modulator\Support;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Foundation\Application as FoundationApplication;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Pharaonic\Laravel\Modulator\Module;
@@ -104,7 +105,7 @@ final class ModuleResources extends ServiceProvider
 
     private function loadRoutes(): void
     {
-        if ($this->app->routesAreCached()) {
+        if ($this->app instanceof FoundationApplication && $this->app->routesAreCached()) {
             return;
         }
 

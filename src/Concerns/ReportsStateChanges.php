@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pharaonic\Laravel\Modulator\Concerns;
 
+use Illuminate\Foundation\Application as FoundationApplication;
+
 /**
  * What to tell after module:enable or module:disable changed the config file.
  *
@@ -24,7 +26,7 @@ trait ReportsStateChanges
         $this->line('Takes effect the next time the application boots.');
         $this->adviseRestart();
 
-        if ($this->laravel->configurationIsCached()) {
+        if ($this->laravel instanceof FoundationApplication && $this->laravel->configurationIsCached()) {
             $this->warn('The configuration is cached, so the application keeps the old state until you run "php artisan config:cache" again.');
         }
     }

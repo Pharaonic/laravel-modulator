@@ -68,11 +68,8 @@ final class RoutesCommand extends Command
         $method = $this->option('method');
         $rows = [];
 
+        /** @var Route $route */
         foreach ($router->getRoutes()->getRoutes() as $route) {
-            if (! $route instanceof Route) {
-                continue;
-            }
-
             $owner = $this->owner($route, $registry->all());
 
             if ($owner === null || ($only !== null && $owner !== $only->id() && ! str_starts_with($owner, $only->id().'/'))) {
