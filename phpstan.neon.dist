@@ -2,4 +2,8 @@ parameters:
     level: max
     paths:
         - src
+    excludePaths:
+        analyse:
+            # Uses Filament's own generator traits; loaded only when filament/filament is installed.
+            - src/Support/FilamentSchema.php
     tmpDir: .phpstan-cache
