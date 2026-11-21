@@ -1,1 +1,0 @@
-@lang('{{ module-slug }}::example.name') - @lang('{{ module-slug }}::example.slug')

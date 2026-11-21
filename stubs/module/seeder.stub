@@ -1,0 +1,16 @@
+<?php
+
+namespace {{ namespace }}\Database\Seeders;
+
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the database with the records of the {{ module }} module.
+     */
+    public function run(): void
+    {
+        //
+    }
+}

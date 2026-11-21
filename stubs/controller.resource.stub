@@ -1,0 +1,65 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ imports }}use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+
+class {{ class }} extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index({{ parentParameters }})
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create({{ parentParameters }})
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store({{ storeParameters }})
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show({{ parameters }})
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit({{ parameters }})
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update({{ updateParameters }})
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy({{ parameters }})
+    {
+        //
+    }
+}
