@@ -58,7 +58,7 @@ if (! function_exists('shop_currency')) {
 
 ### Livewire Components
 
-With `livewire/livewire` installed (Livewire 3), the components in a module's `app/Livewire` are registered for you, named after the module slug. Nothing to configure, and nothing happens without Livewire.
+With `livewire/livewire` installed (Livewire 3 or 4), the components in a module's `app/Livewire` are registered for you, named after the module slug. Nothing to configure, and nothing happens without Livewire.
 
 | Class | Name |
 | --- | --- |
@@ -71,8 +71,9 @@ With `livewire/livewire` installed (Livewire 3), the components in a module's `a
 @livewire('shop::admin.user-table')
 ```
 
-- Only enabled modules register components; abstract classes and classes that are not `Livewire\Component` are skipped.
-- The classes come from the module class map, so a cached manifest (`module:cache`) needs no scan.
+- Only enabled modules register components.
+- On Livewire 3, abstract classes and classes that are not `Livewire\Component` are skipped, and the classes come from the module class map, so a cached manifest (`module:cache`) needs no scan.
+- On Livewire 4, the module slug is a Livewire component namespace for `app/Livewire`, so Livewire finds `shop::admin.user-table` itself.
 - Create one with `module:make:livewire` (see Generators).
 - Livewire 3 only for now: install `livewire/livewire:^3.6`. Livewire 4 is not supported yet.
 
