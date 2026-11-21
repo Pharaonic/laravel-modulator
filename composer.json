@@ -28,9 +28,13 @@
   },
   "require-dev": {
     "laravel/pint": "^1.5",
+    "livewire/livewire": "^2.12",
     "orchestra/testbench": "^5.20",
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^9.6.33"
+  },
+  "suggest": {
+    "livewire/livewire": "Registers the Livewire components of modules (module:make:livewire)."
   },
   "autoload": {
     "psr-4": {
