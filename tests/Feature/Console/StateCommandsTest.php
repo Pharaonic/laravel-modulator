@@ -41,6 +41,11 @@ class StateCommandsTest extends TestCase
      */
     public function test_octane_users_are_told_to_reload_it(): void
     {
+        // This process only: the lowest Laravel 9 dependencies print PHP 8.1+
+        // deprecations, which a separate process would report as a failure.
+        ini_set('display_errors', '0');
+        ini_set('log_errors', '0');
+
         if (! class_exists('Laravel\\Octane\\Octane')) {
             eval('namespace Laravel\\Octane; final class Octane {}');
         }
