@@ -1,10 +1,10 @@
 ## Upgrading From 1.x
 
-Version 9.0.0 replaces 1.x on Laravel 9 (each Laravel major has its own line, from 6.0.0 on Laravel 6). Existing `app/Modules` modules keep working through the `app` pool (1.x layout). Move them to the new layout when you want; nothing is rewritten for you.
+Version 10.0.0 replaces 1.x on Laravel 10 (each Laravel major has its own line, from 6.0.0 on Laravel 6). Existing `app/Modules` modules keep working through the `app` pool (1.x layout). Move them to the new layout when you want; nothing is rewritten for you.
 
 ### Required Changes
 
-1. Require the new version: `composer require pharaonic/laravel-modulator:^9.0` (use the line of your Laravel major).
+1. Require the new version: `composer require pharaonic/laravel-modulator:^10.0` (use the line of your Laravel major).
 2. `App\Modules\ServiceProvider` (the base class 1.x generated) must extend `Illuminate\Support\ServiceProvider`: `Core\ServiceProvider` is removed, and Modulator loads module resources itself.
 3. Replace the removed helpers: `modules()` → `Modules::all()`, `getModuleDirectories()` → `Modules::find($id)->children()`, `studlyToSlug()` → `Modules::find($id)->slug()`, `getFiles()` → the `File` facade.
 4. If you published the 1.x config, publish the new one (`--tag=modulator-config`); it lives in `config/pharaonic/modulator.php`.
@@ -12,7 +12,7 @@ Version 9.0.0 replaces 1.x on Laravel 9 (each Laravel major has its own line, fr
 
 ### Before And After
 
-| 1.x | 9.0.0 |
+| 1.x | 10.0.0 |
 | --- | --- |
 | `app/Modules/Shop`, `App\Modules\Shop\...` | `Modules/Shop/app`, `Modules\Shop\...` (1.x layout still supported) |
 | A module is a folder with `Providers/` | A module is a folder with `app/` (the `app` pool keeps the 1.x rule) |
@@ -21,7 +21,7 @@ Version 9.0.0 replaces 1.x on Laravel 9 (each Laravel major has its own line, fr
 | `module:make:*` → 1.x folders | Laravel folders in new modules; 1.x folders in 1.x modules |
 | `module:migrate:fresh` | Removed: use `module:migrate:refresh` |
 | `module:make:translatable` | Removed: use `module:make:model` and `module:make:migration` with the laravel-translatable docs |
-| `module:make:enum` | Not on this line: enums need PHP 8.1, and this line runs on PHP 8.0 |
+| `module:make:enum` | `module:make:enum`, whose enums use `Pharaonic\SmartEnum\SmartEnum` (`pharaonic/php-smart-enum` is installed with the package) |
 | `module:routes` by name prefix | By real ownership |
 | `module:seed Shop` → `App\Modules\Shop\database\seeders\DatabaseSeeder` | Same for 1.x modules; `Modules\Shop\Database\Seeders\DatabaseSeeder` for new ones |
 | `modules()`, `getFiles()`, `getModuleDirectories()`, `studlyToSlug()` | Removed |

@@ -20,6 +20,7 @@
 - API Reference
   - [Command Reference](#commands)
   - [PHP API](#api-reference)
+  - [AI Ready](#ai-ready)
   - [Upgrading From 1.x](#upgrade-guide)
 - Examples
   - [Use Cases](#examples)

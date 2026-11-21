@@ -1,14 +1,15 @@
 <p align="center"><a href="https://pharaonic.dev/packages/laravel/modulator" target="_blank"><img src="https://raw.githubusercontent.com/Pharaonic/laravel-modulator/develop/docs/cover.webp"></a></p>
 
 <p align="center">
-  <a href="https://php.net" target="_blank"><img src="https://img.shields.io/static/v1?label=PHP&message=8.0%20|%208.1%20|%208.2&color=blue&style=flat-square" alt="PHP Version : 8.0 | 8.1 | 8.2"></a>
-  <a href="https://laravel.com" target="_blank"><img src="https://img.shields.io/static/v1?label=Laravel&message=9.x&color=F05340&style=flat-square" alt="Laravel Version : 9.x"></a>
+  <a href="https://php.net" target="_blank"><img src="https://img.shields.io/static/v1?label=PHP&message=8.1%20|%208.2%20|%208.3&color=blue&style=flat-square" alt="PHP Version : 8.1 | 8.2 | 8.3"></a>
+  <a href="https://laravel.com" target="_blank"><img src="https://img.shields.io/static/v1?label=Laravel&message=10.x&color=F05340&style=flat-square" alt="Laravel Version : 10.x"></a>
   <img src="https://img.shields.io/static/v1?label=License&message=MIT&color=brightgreen&style=flat-square" alt="License">
-  <img src="https://github.com/Pharaonic/laravel-modulator/actions/workflows/build.yml/badge.svg?branch=9.x" alt="Build">
+  <img src="https://github.com/Pharaonic/laravel-modulator/actions/workflows/build.yml/badge.svg?branch=10.x" alt="Build">
   <br>
   <a href="https://packagist.org/packages/Pharaonic/laravel-modulator" target="_blank"><img src="https://img.shields.io/static/v1?label=Packagist&message=pharaonic/laravel-modulator&color=blue&logo=packagist&logoColor=white" alt="Source"></a>
   <a href="https://packagist.org/packages/pharaonic/laravel-modulator" target="_blank"><img src="https://poser.pugx.org/pharaonic/laravel-modulator/v" alt="Packagist Version"></a>
   <a href="https://packagist.org/packages/pharaonic/laravel-modulator" target="_blank"><img src="https://poser.pugx.org/pharaonic/laravel-modulator/downloads" alt="Packagist Downloads"></a>
+  <a href="https://pharaonic.dev/packages/laravel/modulator#ai-ready" target="_blank"><img src="https://img.shields.io/static/v1?label=AI%20Ready&message=Laravel%20Boost&color=8B5CF6&style=flat-square" alt="AI Ready: Laravel Boost"></a>
 </p>
 
 <h3 align="center">Laravel-native modules: discovered by convention, nested, overridable from packages, and autoloaded in every Composer mode.</h3>

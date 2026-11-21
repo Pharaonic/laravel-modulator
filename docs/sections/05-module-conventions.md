@@ -58,13 +58,13 @@ if (! function_exists('shop_currency')) {
 
 ### Livewire Components
 
-With `livewire/livewire` installed (Livewire 2), the components in a module's `app/Http/Livewire` are registered for you, named after the module slug. Nothing to configure, and nothing happens without Livewire.
+With `livewire/livewire` installed (Livewire 3), the components in a module's `app/Livewire` are registered for you, named after the module slug. Nothing to configure, and nothing happens without Livewire.
 
 | Class | Name |
 | --- | --- |
-| `Modules\Shop\Http\Livewire\Cart` | `shop::cart` |
-| `Modules\Shop\Http\Livewire\Admin\UserTable` | `shop::admin.user-table` |
-| `Modules\Shop\Orders\Http\Livewire\OrderList` | `shop-orders::order-list` |
+| `Modules\Shop\Livewire\Cart` | `shop::cart` |
+| `Modules\Shop\Livewire\Admin\UserTable` | `shop::admin.user-table` |
+| `Modules\Shop\Orders\Livewire\OrderList` | `shop-orders::order-list` |
 
 ```blade title="Blade"
 <livewire:shop::cart />
@@ -77,18 +77,32 @@ With `livewire/livewire` installed (Livewire 2), the components in a module's `a
 
 ### Filament Resources, Pages And Widgets
 
-With `filament/filament` installed (Filament 2), a module's Filament classes join the admin panel on their own, the way a Filament plugin's do:
+With `filament/filament` installed (Filament 3), a module's Filament classes join your panels on their own, by directory, the way Filament lays out an application:
 
-| Directory | Registered as |
+| Directory | Joins |
 | --- | --- |
-| `app/Filament/Resources` | resources (their pages, relation managers and widgets too) |
-| `app/Filament/Pages` | pages |
-| `app/Filament/Widgets` | dashboard widgets |
+| `app/Filament/Resources`, `app/Filament/Pages`, `app/Filament/Widgets` | the default panel |
+| `app/Filament/<PanelId>/Resources`, `.../Pages`, `.../Widgets` | the panel with that id, in StudlyCase: `app/Filament/App/Pages` is the `app` panel's |
 
-- Only enabled modules register them; abstract classes, and classes that are not a resource, page or widget, are skipped.
+Nothing goes in your panel providers. The resources' own pages, relation managers and widgets come with them.
+
+- Only enabled modules add classes; abstract classes, and classes that are not a resource, page or widget, are skipped.
 - Only classes directly in each directory count: `Resources/ProductResource/Pages/*` are the resource's pages, not standalone pages.
-- The classes come from the module class map, so nothing is scanned.
+- A panel is the default one when `->default()` comes before `->id()` in its provider, as in the provider Filament generates.
+- After `php artisan filament:cache-components`, panels use the cache: run it again when module classes change.
 - Create a resource with `module:make:filament-resource` (see Generators).
+
+### Executors
+
+With `pharaonic/laravel-executor` installed, a module's `executors` folder joins the executor pool, so `php artisan execute`, `execute:rollback` and `execute:status` run its executors with the application's.
+
+```bash title="Terminal" no-line-numbers
+php artisan module:make:executor Shop ImportCountries
+php artisan execute
+```
+
+- Only enabled modules with an `executors` folder are added.
+- Executor names are unique across every folder, the application's included.
 
 ### Vite Assets
 

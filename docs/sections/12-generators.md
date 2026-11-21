@@ -24,15 +24,17 @@ There is a `module:make:*` command for every `make:*` command of Laravel.
 | `module:make:component` | `app/View/Components` + view | `--inline`, `--view` (anonymous: only the view), `--path=`, tests |
 | `module:make:config` | `config` | |
 | `module:make:controller` | `app/Http/Controllers` | `--api`, `--type=`, `--invokable`, `--model=`, `--parent=`, `--resource`, `--requests`, `--singleton`, `--creatable`, tests |
+| `module:make:enum` | `app/Enums` | `--string`, `--int`; uses `Pharaonic\SmartEnum\SmartEnum` |
 | `module:make:event` | `app/Events` | |
 | `module:make:exception` | `app/Exceptions` | `--render`, `--report` |
+| `module:make:executor` | `executors` | runs laravel-executor's `make:executor`; needs `pharaonic/laravel-executor` |
 | `module:make:factory` | `database/factories` | `--model=` |
-| `module:make:filament-resource` | `app/Filament/Resources` + its pages | `--model=`, `--simple`, `--view`, `--soft-deletes`, `--generate`; needs `filament/filament` |
+| `module:make:filament-resource` | `app/Filament/Resources` (default panel) + its pages | `--model=`, `--simple`, `--view`, `--soft-deletes`, `--generate`; needs `filament/filament` |
 | `module:make:interface` | `app/Contracts` | |
 | `module:make:job` | `app/Jobs` | `--sync`, `--batched`, tests |
 | `module:make:job-middleware` | `app/Jobs/Middleware` | tests |
 | `module:make:listener` | `app/Listeners` | `--event=`, `--queued`, tests |
-| `module:make:livewire` | `app/Http/Livewire` + `resources/views/livewire` | `--inline`, tests (`Livewire::test`); needs `livewire/livewire` |
+| `module:make:livewire` | `app/Livewire` + `resources/views/livewire` | `--inline`, tests (`Livewire::test`); needs `livewire/livewire` |
 | `module:make:mail` | `app/Mail` | `--markdown[=view]`, `--view[=view]`, tests |
 | `module:make:middleware` | `app/Http/Middleware` | tests |
 | `module:make:migration` | `database/migrations` | `--create=`, `--table=`, `--fullpath` (runs Laravel's `make:migration`) |
