@@ -1,9 +1,11 @@
 <?php
 
-it('can render', function () {
-    $contents = $this->view('{{ view }}', [
-        //
-    ]);
+uses(Tests\TestCase::class);
 
-    $contents->assertSee('');
+it('can render', function () {
+    $contents = view('{{ view }}', [
+        //
+    ])->render();
+
+    expect($contents)->toContain('');
 });

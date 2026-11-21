@@ -174,7 +174,11 @@ class MakeOptionsTest extends TestCase
 
         $this->make('view', ['name' => 'products.index', '--test' => true]);
         $this->assertFileExists($this->base.'/Modules/Shop/resources/views/products/index.blade.php');
-        $this->assertStringContainsString("view('shop::products.index'", $this->file('tests/Feature/View/ProductsIndexTest.php'));
+        $test = $this->file('tests/Feature/View/ProductsIndexTest.php');
+        $this->assertStringContainsString("view('shop::products.index'", $test);
+        // $this->view() (InteractsWithViews) only exists from Laravel 8: the test renders through view() on every line.
+        $this->assertStringNotContainsString('$this->view(', $test);
+        $this->assertStringContainsString('->render()', $test);
 
         $this->make('view', ['name' => 'emails/plain', '--extension' => 'txt']);
         $this->assertFileExists($this->base.'/Modules/Shop/resources/views/emails/plain.txt');
