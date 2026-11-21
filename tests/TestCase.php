@@ -92,6 +92,26 @@ abstract class TestCase extends Orchestra
     }
 
     /**
+     * Skip the test unless the optional package that provides $class is installed.
+     */
+    protected function requiresPackage(string $class, string $package): void
+    {
+        if (! class_exists($class)) {
+            $this->markTestSkipped($package.' is not installed.');
+        }
+    }
+
+    /**
+     * Skip the test when the optional package that provides $class is installed.
+     */
+    protected function withoutPackage(string $class, string $package): void
+    {
+        if (class_exists($class)) {
+            $this->markTestSkipped($package.' is installed.');
+        }
+    }
+
+    /**
      * Run a command and return [exit code, output].
      *
      * @param  array<string, mixed>  $parameters
