@@ -75,7 +75,6 @@ With `livewire/livewire` installed (Livewire 3 or 4), the components in a module
 - On Livewire 3, abstract classes and classes that are not `Livewire\Component` are skipped, and the classes come from the module class map, so a cached manifest (`module:cache`) needs no scan.
 - On Livewire 4, the module slug is a Livewire component namespace for `app/Livewire`, so Livewire finds `shop::admin.user-table` itself.
 - Create one with `module:make:livewire` (see Generators).
-- Livewire 3 only for now: install `livewire/livewire:^3.6`. Livewire 4 is not supported yet.
 
 ### Filament Resources, Pages And Widgets
 

@@ -124,13 +124,16 @@ jobs:
         shell: bash
         run: |
           packages="${{ matrix.packages }}"
-          [ -n "$packages" ] || packages="$(jq -r '.suggest // {} | keys | join(" ")' composer.json)"
-          [ -n "$packages" ] || exit 0
 
-          # The majors this line integrates with: Livewire 3 and Filament 3
-          # (Composer would pick Livewire 4 and Filament 5 on Laravel 11).
-          packages="${packages/filament\/filament/filament/filament:^3.3}"
-          packages="${packages/livewire\/livewire/livewire/livewire:^3.6}"
+          if [ -z "$packages" ]; then
+            packages="$(jq -r '.suggest // {} | keys | join(" ")' composer.json)"
+            [ -n "$packages" ] || exit 0
+
+            # Filament 3, the major this line integrates with, and the Livewire 3
+            # it needs (Composer would pick Filament 5 on Laravel 11).
+            packages="${packages/filament\/filament/filament/filament:^3.3}"
+            packages="${packages/livewire\/livewire/livewire/livewire:^3.6}"
+          fi
           composer require --dev --no-interaction --no-progress --with-all-dependencies $packages
 
       - name: Run tests
