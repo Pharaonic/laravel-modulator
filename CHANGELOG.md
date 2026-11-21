@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 9.1.0 - 2026-11-21
+
+### Added
+
+- Vite module assets in the application's single build: `module:vite` lists the entry points of the enabled modules (`pharaonic.modulator.vite.entries`, by default `resources/css/app.css` and `resources/js/app.js`) for `vite.config.js` through the shipped `resources/vite/modulator.js` helper, and `@moduleVite('Shop')` renders a module's tags.
+
 ## 9.0.0 - 2026-11-21
 
 ### Added

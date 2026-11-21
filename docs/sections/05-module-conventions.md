@@ -90,3 +90,38 @@ With `filament/filament` installed (Filament 2), a module's Filament classes joi
 - The classes come from the module class map, so nothing is scanned.
 - Create a resource with `module:make:filament-resource` (see Generators).
 
+### Vite Assets
+
+Module assets are part of the application's single Vite build. A module's entry points are the files of `pharaonic.modulator.vite.entries` that exist in it, by default `resources/css/app.css` and `resources/js/app.js`.
+
+Add the entries of every enabled module to the inputs in `vite.config.js`, using the helper the package ships (no npm package to install):
+
+```js title="vite.config.js"
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import { modules } from './vendor/pharaonic/laravel-modulator/resources/vite/modulator.js';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js', ...modules()],
+            refresh: true,
+        }),
+    ],
+});
+```
+
+`modules()` runs `php artisan module:vite` once, when Vite loads the config. Pass `{ php: '/usr/bin/php8.2' }` to use another PHP binary (or set `PHP_BINARY`).
+
+Then load a module's assets in its views:
+
+```blade title="Blade"
+@moduleVite('Shop')
+@moduleVite('Shop', 'resources/js/admin.js')
+@moduleVite('Shop', ['resources/js/admin.js', 'resources/css/admin.css'])
+```
+
+- `@moduleVite('Shop')` renders Laravel's `@vite` tags for the module's existing entries, and nothing when it has none. Given entries are paths inside the module, rendered as they are, so they must also be Vite inputs (add them to `pharaonic.modulator.vite.entries`, or to `input` by hand).
+- Paths are relative to the project root, as Vite's manifest names them (`Modules/Shop/resources/js/app.js`), so package modules in `vendor/` work the same.
+- Disabled modules are left out of `module:vite`. Enabling or disabling a module changes the inputs, so rebuild (`npm run build`), or restart `npm run dev`.
+
