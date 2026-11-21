@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here.
 
+## 10.0.0 - Unreleased
+
+### Added
+
+- `module:make:enum` (`--string`, `--int`): every enum uses `Pharaonic\SmartEnum\SmartEnum`, and `pharaonic/php-smart-enum` is installed with the package.
+- Optional laravel-executor integration: with `pharaonic/laravel-executor` installed, a module's `executors` folder joins the executor pool, and `module:make:executor` writes an executor into it.
+- AI ready: Laravel Boost resources (a guideline and the `modulator-development` skill), installed with `php artisan boost:install`.
+
+### Changed
+
+- Livewire 3: module components live in `app/Livewire` (`Modules\Shop\Livewire\Cart`), as `App\Livewire` does in Livewire 3; `module:make:livewire` writes them there, with their tests in `tests/Feature/Livewire`.
+- Filament 3: a module's `app/Filament/{Resources,Pages,Widgets}` join the default panel, and `app/Filament/<PanelId>/…` the panel with that id. `module:make:filament-resource` writes Filament 3 resources and pages.
+
+### Compatibility
+
+- Supports Laravel 10.0 and newer within 10.x, on PHP 8.1, 8.2 and 8.3.
+- Same features and behavior as 9.1.0, plus and except the changes above.
+
 ## 9.1.0 - 2026-11-21
 
 ### Added
