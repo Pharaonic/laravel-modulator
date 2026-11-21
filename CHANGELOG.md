@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented here.
 
+## 8.0.0 - Unreleased
+
+### Added
+
+- `module:make:queue-batches-table` and `module:make:job --batched`, which need Laravel 8.
+- Optional Filament 2 integration: with `filament/filament` installed, the resources, pages and widgets in a module's `app/Filament` are registered in the admin panel, and `module:make:filament-resource` (`--model=`, `--simple`, `--view`, `--soft-deletes`, `--generate`) writes a resource and its pages for a model of the module. Filament is not required.
+
+### Changed
+
+- `module:make:cache-table`, `notifications-table`, `queue-failed-table`, `queue-table` and `session-table` always write anonymous migration classes, which every Laravel 8.75+ supports.
+
+### Compatibility
+
+- Supports Laravel 8.75 and newer within 8.x, on PHP 8.0 and 8.1.
+- Same features and behavior as 7.0.0, plus the commands above.
+
 ## 7.0.0 - 2026-11-21
 
 ### Added
