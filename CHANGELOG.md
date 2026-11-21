@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## 11.2.0 - 2026-11-21
+
+### Added
+
+- Filament 4 and 5: a module's Filament folders join the panels as on Filament 3 (`app/Filament/...` the default panel, `app/Filament/<PanelId>/...` that panel), discovered by the panel itself, nested resource folders included. `module:make:filament-resource` runs Filament's own `make:filament-resource` into the module, so the resource has that release's layout.
+- `module:make:filament-resource --panel=app` writes the resource for another panel, into `app/Filament/App/Resources`, on every Filament release.
+
 ## 11.1.0 - 2026-11-21
 
 ### Added

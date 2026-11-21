@@ -107,6 +107,8 @@ jobs:
         packages:
           - ""
           - "livewire/livewire:^4.0"
+          - "filament/filament:^4.0"
+          - "filament/filament:^5.0"
 
     steps:
       - name: Checkout
@@ -129,8 +131,8 @@ jobs:
             packages="$(jq -r '.suggest // {} | keys | join(" ")' composer.json)"
             [ -n "$packages" ] || exit 0
 
-            # Filament 3, the major this line integrates with, and the Livewire 3
-            # it needs (Composer would pick Filament 5 on Laravel 11).
+            # Filament 3 and Livewire 3 together; Filament 4 and 5, and Livewire 4,
+            # have their own runs (Composer would pick Filament 5 on Laravel 11).
             packages="${packages/filament\/filament/filament/filament:^3.3}"
             packages="${packages/livewire\/livewire/livewire/livewire:^3.6}"
           fi

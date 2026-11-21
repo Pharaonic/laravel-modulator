@@ -65,7 +65,7 @@ module_resource_path('Shop', 'views');
 Each one works only when its package is installed; the package never requires them.
 
 - Livewire 3 or 4: components in `app/Livewire` are registered as `<slug>::<kebab path>` (`Modules\Shop\Livewire\Admin\UserTable` is `shop::admin.user-table`). Create one with `module:make:livewire Shop Cart` (`--inline`).
-- Filament 3: `app/Filament/{Resources,Pages,Widgets}` join the default panel, `app/Filament/<PanelId>/{Resources,Pages,Widgets}` the panel with that id (`app/Filament/App/Pages` is the `app` panel's). Create a resource with `module:make:filament-resource Shop Product` (`--simple`, `--view`, `--soft-deletes`, `--generate`, `--model=`).
+- Filament 3, 4 or 5: `app/Filament/{Resources,Pages,Widgets}` join the default panel, `app/Filament/<PanelId>/{Resources,Pages,Widgets}` the panel with that id (`app/Filament/App/Pages` is the `app` panel's). Create a resource with `module:make:filament-resource Shop Product` (`--panel=`, `--simple`, `--view`, `--soft-deletes`, `--generate`, `--model=`); on Filament 4 and 5 it runs Filament's own `make:filament-resource` into the module, and the panel discovers the module folders.
 - laravel-executor: a module's `executors/` folder is added to the executor pool. Create one with `module:make:executor Shop ImportCountries`.
 - Vite: a module's existing `resources/css/app.css` and `resources/js/app.js` (`pharaonic.modulator.vite.entries`) are listed by `module:vite`. Add them to the app build with `...modules()` from `./vendor/pharaonic/laravel-modulator/resources/vite/modulator.js` in `vite.config.js`, and load them in a view with `@moduleVite('Shop')`.
 
