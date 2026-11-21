@@ -8,10 +8,10 @@ class {{ class }} extends TestCase
 {
     public function test_it_can_render(): void
     {
-        $contents = $this->view('{{ view }}', [
+        $contents = view('{{ view }}', [
             //
-        ]);
+        ])->render();
 
-        $contents->assertSee('');
+        $this->assertStringContainsString('', $contents);
     }
 }

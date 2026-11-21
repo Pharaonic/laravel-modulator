@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 6.0.1 - Unreleased
+
+### Fixed
+
+- The test that `module:make:view --test` writes called `$this->view()`, which only exists from Laravel 8, so it failed on Laravel 6. It now renders the view with `view()->render()`.
+
 ## 6.0.0 - 2026-11-21
 
 ### Added
