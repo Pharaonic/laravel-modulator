@@ -34,7 +34,7 @@
     "phpunit/phpunit": "^11.5.50"
   },
   "suggest": {
-    "filament/filament": "Adds the Filament 3 resources, pages and widgets of modules to their panels (module:make:filament-resource).",
+    "filament/filament": "Adds the Filament 3, 4 or 5 resources, pages and widgets of modules to their panels (module:make:filament-resource).",
     "livewire/livewire": "Registers the Livewire 3 or 4 components of modules (module:make:livewire).",
     "pharaonic/laravel-executor": "Adds the executors folder of modules to the executor pool (module:make:executor)."
   },

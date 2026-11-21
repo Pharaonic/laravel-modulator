@@ -29,7 +29,7 @@ There is a `module:make:*` command for every `make:*` command of Laravel.
 | `module:make:exception` | `app/Exceptions` | `--render`, `--report` |
 | `module:make:executor` | `executors` | runs laravel-executor's `make:executor`; needs `pharaonic/laravel-executor` |
 | `module:make:factory` | `database/factories` | `--model=` |
-| `module:make:filament-resource` | `app/Filament/Resources` (default panel) + its pages | `--model=`, `--simple`, `--view`, `--soft-deletes`, `--generate`; needs `filament/filament` |
+| `module:make:filament-resource` | `app/Filament/Resources` (default panel) or `app/Filament/<PanelId>/Resources` + its pages | `--panel=`, `--model=`, `--simple`, `--view`, `--soft-deletes`, `--generate`; needs `filament/filament` (Filament 4 and 5: runs Filament's `make:filament-resource`) |
 | `module:make:interface` | `app/Contracts` | |
 | `module:make:job` | `app/Jobs` | `--sync`, `--batched`, tests |
 | `module:make:job-middleware` | `app/Jobs/Middleware` | tests |
