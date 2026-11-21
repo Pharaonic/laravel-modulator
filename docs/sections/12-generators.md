@@ -23,7 +23,7 @@ There is a `module:make:*` command for every `make:*` command of Laravel.
 | `module:make:command` | `app/Console/Commands` | `--command=`, tests |
 | `module:make:component` | `app/View/Components` + view | `--inline`, `--view` (anonymous: only the view), `--path=`, tests |
 | `module:make:config` | `config` | |
-| `module:make:controller` | `app/Http/Controllers` | `--api`, `--type=`, `--invokable`, `--model=`, `--parent=`, `--resource`, `--requests`, tests |
+| `module:make:controller` | `app/Http/Controllers` | `--api`, `--type=`, `--invokable`, `--model=`, `--parent=`, `--resource`, `--requests`, `--singleton`, `--creatable`, tests |
 | `module:make:event` | `app/Events` | |
 | `module:make:exception` | `app/Exceptions` | `--render`, `--report` |
 | `module:make:factory` | `database/factories` | `--model=` |
