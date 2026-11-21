@@ -19,13 +19,13 @@ breadcrumbs:
 card:
   topic: architecture
   icon: grid
-  tags: modules modular architecture nested-modules packages override autoload generators
+  tags: modules modular architecture nested-modules packages override autoload generators ai-ready laravel-boost
   description: Laravel-native modules discovered by convention, nested at any depth, shipped by Composer packages and overridden locally, autoloaded in every Composer mode.
 
 seo:
   title: "{package.fullName} - Modular Laravel Applications"
   description: "{package.name} is a Laravel package for modular applications: convention-based modules, nested modules, package modules with local overrides, and generators. {package.downloadsShort}+ downloads, {package.license} licensed."
-  keywords: laravel modules, modular laravel, nested modules, laravel package modules, module generator, module override
+  keywords: laravel modules, modular laravel, nested modules, laravel package modules, module generator, module override, laravel boost, ai ready
   author: Pharaonic
   images:
     - "{package.cover}"

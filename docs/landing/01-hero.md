@@ -9,6 +9,8 @@ badges:
     color: purple
   - label: "{package.downloadsShort}+ downloads"
     color: blue
+  - label: AI Ready · Laravel Boost
+    color: violet
 eyebrow: "{package.name}"
 title: Modules that
 highlight: stay Laravel
