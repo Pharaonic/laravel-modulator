@@ -209,7 +209,7 @@ final class ModulatorServiceProvider extends ServiceProvider
         $events->listen(CommandFinished::class, function (CommandFinished $event): void {
             $output = $event->output;
 
-            if ($event->exitCode !== 0 || $output === null || ! in_array($event->command, ['optimize', 'optimize:clear'], true)) {
+            if ($event->exitCode !== 0 || ! in_array($event->command, ['optimize', 'optimize:clear'], true)) {
                 return;
             }
 
