@@ -11,10 +11,11 @@ use ReflectionClass;
 
 /**
  * Registers the Livewire components of a module, when Livewire is installed:
- * every concrete Livewire\Component under <Module>\Livewire (Livewire 3), named
+ * every concrete Livewire\Component under <Module>\Livewire (Livewire 3 and 4), named
  * "<slug>::<kebab path>" (Modules\Shop\Livewire\Admin\UserTable is
- * "shop::admin.user-table"). The classes come from the module class map, so
- * nothing is scanned.
+ * "shop::admin.user-table"). On Livewire 3 the classes come from the module
+ * class map, so nothing is scanned; on Livewire 4 the slug is a component
+ * namespace for <Module>\Livewire, which Livewire resolves itself.
  *
  * @internal
  */
@@ -59,7 +60,19 @@ final class LivewireComponents
 
         $livewire = $app->make('livewire');
 
-        if (! is_object($livewire) || ! method_exists($livewire, 'component')) {
+        if (! is_object($livewire)) {
+            return;
+        }
+
+        // Livewire 4 resolves "<namespace>::<name>" through its namespaces only,
+        // from the class namespace on demand.
+        if (method_exists($livewire, 'addNamespace')) {
+            $livewire->addNamespace($module->slug(), null, rtrim(self::namespace($module), '\\'));
+
+            return;
+        }
+
+        if (! method_exists($livewire, 'component')) {
             return;
         }
 
