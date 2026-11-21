@@ -213,11 +213,7 @@ final class ModulatorServiceProvider extends ServiceProvider
                 return;
             }
 
-            $manifest = $this->app->make(Manifest::class);
-
-            if (! $manifest instanceof Manifest) {
-                return;
-            }
+            $manifest = Support\Resolve::make($this->app, Manifest::class);
 
             try {
                 if ($event->command === 'optimize') {

@@ -96,19 +96,12 @@ final class ViteEntries
             return new HtmlString('');
         }
 
-        $vite = $app->make(Vite::class);
-
-        if (! $vite instanceof Vite) {
-            throw new LogicException('Laravel\'s Vite is not available.');
-        }
-
-        return $vite($paths);
+        return Resolve::make($app, Vite::class)($paths);
     }
 
     private static function module(Container $app, string $id): Module
     {
-        $registry = $app->make(ModuleRegistry::class);
-        $module = $registry instanceof ModuleRegistry ? $registry->find($id) : null;
+        $module = Resolve::make($app, ModuleRegistry::class)->find($id);
 
         if ($module === null) {
             throw new InvalidArgumentException(sprintf('Module [%s] does not exist.', $id));
