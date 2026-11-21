@@ -36,7 +36,7 @@ All notable changes to this project are documented here.
 - `module_path()` and the `module_*_path()` helpers resolve through the registry and reject invalid identities.
 - `module:make` creates the module in the generation pool (`Modules/<Name>`, new layout) instead of `app/Modules`, and nests a child in its parent's `Modules/` folder.
 - `module:make:*` writes into `app/` with Laravel's directories (`Console/Commands`, `Contracts`, `Concerns`, `Models/Scopes`); legacy modules keep the 1.x directories (`Commands`, `Interfaces`, `Traits`, `Scopes`, `Classes`). Generators refuse package modules: publish them first.
-- `module:delete` asks for confirmation (or `--force`), offers `--dry-run`, refuses modules others depend on, modules with children (without `--with-children`), package modules and anything outside its pool.
+- `module:delete` asks for confirmation (or `--force`), offers `--dry-run`, refuses modules others depend on, modules with children (without `--with-children`), package modules and anything outside its pool. A symlink or Windows junction inside a deleted, published or generated module is removed as a link, never followed.
 - `module:seed` resolves `--class` in the module seeders namespace and fails when the class does not exist.
 - `module:routes` lists the routes a module owns (the module its route file was loaded for, or the module of the controller), not the routes whose name starts with its slug.
 - `module:test` runs Pest or PHPUnit with an argument list and returns their exit code.

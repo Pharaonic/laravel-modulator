@@ -8,6 +8,7 @@ use Orchestra\Testbench\TestCase as Orchestra;
 use Pharaonic\Laravel\Modulator\ModulatorServiceProvider;
 use Pharaonic\Laravel\Modulator\ModuleRegistry;
 use Pharaonic\Laravel\Modulator\Support\ConfigEditor;
+use Pharaonic\Laravel\Modulator\Support\Files;
 
 /**
  * Every test runs against its own copy of the Testbench skeleton, so modules,
@@ -41,7 +42,7 @@ abstract class TestCase extends Orchestra
 
         putenv('SHELL_INTERACTIVE');
 
-        (new Filesystem)->deleteDirectory($this->base);
+        Files::deleteDirectory($this->base);
     }
 
     protected function getBasePath()

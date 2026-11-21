@@ -177,7 +177,7 @@ final class PublishModule
         } catch (Throwable $e) {
             if ($backup !== null && is_dir($backup)) {
                 if (is_dir($target)) {
-                    $this->files->deleteDirectory($target);
+                    Files::deleteDirectory($target);
                 }
 
                 Files::move($backup, $target);
@@ -187,7 +187,7 @@ final class PublishModule
             throw new RuntimeException('Publishing failed and nothing was changed: '.$e->getMessage(), 0, $e);
         } finally {
             if (is_dir($temporary)) {
-                $this->files->deleteDirectory($temporary);
+                Files::deleteDirectory($temporary);
             }
         }
 

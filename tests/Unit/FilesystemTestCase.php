@@ -2,7 +2,7 @@
 
 namespace Pharaonic\Laravel\Modulator\Tests\Unit;
 
-use Illuminate\Filesystem\Filesystem;
+use Pharaonic\Laravel\Modulator\Support\Files;
 use Pharaonic\Laravel\Modulator\Tests\WritesFiles;
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +24,7 @@ abstract class FilesystemTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        (new Filesystem)->deleteDirectory($this->base);
+        Files::deleteDirectory($this->base);
 
         parent::tearDown();
     }

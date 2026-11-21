@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Pharaonic\Laravel\Modulator\Actions;
 
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Filesystem\Filesystem;
 use Pharaonic\Laravel\Modulator\Discovery\Manifest;
 use Pharaonic\Laravel\Modulator\ModuleRegistry;
 use Pharaonic\Laravel\Modulator\Support\Files;
@@ -105,7 +104,7 @@ final class DeleteModule
     {
         $trash = Files::workspace($this->app->storagePath(), 'tmp').DIRECTORY_SEPARATOR.'deleted-'.bin2hex(random_bytes(8));
         Files::move($plan['path'], $trash);
-        (new Filesystem)->deleteDirectory($trash);
+        Files::deleteDirectory($trash);
 
         try {
             $this->manifest->rebuild();

@@ -91,7 +91,75 @@ final class Files
             throw new RuntimeException(sprintf('Cannot move [%s] to [%s].', $from, $to));
         }
 
-        $files->deleteDirectory($from);
+        self::deleteDirectory($from);
+    }
+
+    /**
+     * Delete a directory and its contents without following links: a symlink
+     * or a Windows junction inside it (or the directory itself, when it is one)
+     * is removed as a link, so nothing outside the directory is deleted.
+     * Laravel's deleteDirectory() follows junctions on Windows.
+     */
+    public static function deleteDirectory(string $directory): void
+    {
+        if (self::isLink($directory)) {
+            self::removeLink($directory);
+
+            return;
+        }
+
+        if (! is_dir($directory)) {
+            return;
+        }
+
+        foreach (scandir($directory) ?: [] as $name) {
+            if ($name === '.' || $name === '..') {
+                continue;
+            }
+
+            $path = $directory.DIRECTORY_SEPARATOR.$name;
+
+            if (self::isLink($path)) {
+                self::removeLink($path);
+            } elseif (is_dir($path)) {
+                self::deleteDirectory($path);
+            } else {
+                @unlink($path);
+            }
+        }
+
+        @rmdir($directory);
+    }
+
+    /**
+     * Whether $path is a symlink or a junction: a directory that resolves
+     * somewhere else than its own place in its parent.
+     */
+    private static function isLink(string $path): bool
+    {
+        if (is_link($path)) {
+            return true;
+        }
+
+        if (! is_dir($path)) {
+            return false;
+        }
+
+        $real = realpath($path);
+        $parent = realpath(dirname($path));
+
+        return $real !== false && $parent !== false
+            && self::comparable($real) !== self::comparable($parent.DIRECTORY_SEPARATOR.basename($path));
+    }
+
+    private static function removeLink(string $path): void
+    {
+        // A link to a directory is removed with rmdir() on Windows, unlink() elsewhere.
+        if (PHP_OS_FAMILY === 'Windows' && is_dir($path)) {
+            @rmdir($path);
+        } else {
+            @unlink($path);
+        }
     }
 
     /**

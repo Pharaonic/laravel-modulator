@@ -174,7 +174,7 @@ final class MakeModule
             throw new RuntimeException('The module was not created: '.$e->getMessage(), 0, $e);
         } finally {
             if (is_dir($workspace)) {
-                $files->deleteDirectory($workspace);
+                Files::deleteDirectory($workspace);
             }
         }
     }

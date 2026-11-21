@@ -3,6 +3,7 @@
 namespace Pharaonic\Laravel\Modulator\Tests\Feature;
 
 use Illuminate\Filesystem\Filesystem;
+use Pharaonic\Laravel\Modulator\Support\Files;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -83,7 +84,9 @@ class ComposerAutoloadTest extends TestCase
     public static function tearDownAfterClass(): void
     {
         if (self::$root !== null) {
-            (new Filesystem)->deleteDirectory(self::$root);
+            // The path repositories are links (junctions on Windows) to this
+            // repository and to the fixture package: never follow them.
+            Files::deleteDirectory(self::$root);
             self::$root = null;
         }
     }
