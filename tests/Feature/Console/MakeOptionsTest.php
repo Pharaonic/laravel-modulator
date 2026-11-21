@@ -37,7 +37,7 @@ class MakeOptionsTest extends TestCase
 
     public function test_every_laravel_make_command_has_a_module_command(): void
     {
-        $laravel = ['cache-table', 'cast', 'channel', 'class', 'command', 'component', 'config', 'controller', 'event', 'exception', 'factory', 'interface', 'job', 'job-middleware', 'listener', 'mail', 'middleware', 'migration', 'model', 'notification', 'notifications-table', 'observer', 'policy', 'provider', 'queue-failed-table', 'queue-table', 'request', 'resource', 'rule', 'scope', 'seeder', 'session-table', 'test', 'trait', 'view'];
+        $laravel = ['cache-table', 'cast', 'channel', 'class', 'command', 'component', 'config', 'controller', 'event', 'exception', 'factory', 'interface', 'job', 'job-middleware', 'listener', 'mail', 'middleware', 'migration', 'model', 'notification', 'notifications-table', 'observer', 'policy', 'provider', 'queue-batches-table', 'queue-failed-table', 'queue-table', 'request', 'resource', 'rule', 'scope', 'seeder', 'session-table', 'test', 'trait', 'view'];
         $commands = Artisan::all();
 
         foreach ($laravel as $type) {
@@ -245,7 +245,7 @@ PHP);
     public function test_table_migrations_match_the_framework_tables(): void
     {
         $this->app['config']->set('database.default', 'testing');
-        $types = ['cache-table' => 'cache', 'notifications-table' => 'notifications', 'queue-failed-table' => 'failed_jobs', 'queue-table' => 'jobs', 'session-table' => 'sessions'];
+        $types = ['cache-table' => 'cache', 'notifications-table' => 'notifications', 'queue-batches-table' => 'job_batches', 'queue-failed-table' => 'failed_jobs', 'queue-table' => 'jobs', 'session-table' => 'sessions'];
 
         foreach (array_keys($types) as $type) {
             $this->make($type, []);
@@ -266,5 +266,25 @@ PHP);
         foreach ($types as $table) {
             $this->assertTrue(\Illuminate\Support\Facades\Schema::hasTable($table), $table);
         }
+    }
+
+    public function test_a_batched_job_runs_in_a_batch(): void
+    {
+        $this->app['config']->set('database.default', 'testing');
+        $this->make('queue-batches-table', []);
+        $this->make('job', ['name' => 'ImportRow', '--batched' => true]);
+        $job = $this->file('app/Jobs/ImportRow.php');
+        $this->assertStringContainsString('use Batchable,', $job);
+        $this->write('Modules/Shop/app/Jobs/ImportRow.php', str_replace("        //\n    }", "        cache()->increment('imported');\n    }", $job));
+
+        $this->reload();
+        $this->app['config']->set('database.default', 'testing');
+        $this->app['config']->set('queue.default', 'sync');
+        $this->assertSame(0, $this->command('module:migrate', ['module' => 'Shop'])[0]);
+
+        $batch = \Illuminate\Support\Facades\Bus::batch([new \Modules\Shop\Jobs\ImportRow(), new \Modules\Shop\Jobs\ImportRow()])->dispatch();
+
+        $this->assertSame(2, cache('imported'));
+        $this->assertTrue(\Illuminate\Support\Facades\Bus::findBatch($batch->id)->finished());
     }
 }

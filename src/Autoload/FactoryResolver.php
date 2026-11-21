@@ -36,13 +36,7 @@ final class FactoryResolver
             return;
         }
 
-        $callback = [$factory, 'guessFactoryNamesUsing'];
-
-        if (! is_callable($callback)) {
-            return;
-        }
-
-        $callback(static function (string $model) use ($app, $namespaces, $factory): string {
+        $factory::guessFactoryNamesUsing(static function (string $model) use ($app, $namespaces, $factory): string {
             try {
                 $appNamespace = $app->getNamespace();
             } catch (Throwable $e) {

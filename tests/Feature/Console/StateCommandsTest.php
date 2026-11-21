@@ -34,6 +34,23 @@ class StateCommandsTest extends TestCase
         return (new ConfigEditor)->read((string) file_get_contents($this->config()));
     }
 
+    /**
+     * @runInSeparateProcess
+     *
+     * @preserveGlobalState disabled
+     */
+    public function test_octane_users_are_told_to_reload_it(): void
+    {
+        if (! class_exists('Laravel\\Octane\\Octane')) {
+            eval('namespace Laravel\\Octane; final class Octane {}');
+        }
+
+        [$status, $output] = $this->command('module:disable', ['module' => 'Blog']);
+
+        $this->assertSame(0, $status, $output);
+        $this->assertStringContainsString('"php artisan queue:restart" and "php artisan octane:reload"', $output);
+    }
+
     public function test_disabling_publishes_the_config_and_keeps_its_comments(): void
     {
         [$status, $output] = $this->command('module:disable', ['module' => 'Blog']);

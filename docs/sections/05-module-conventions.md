@@ -75,3 +75,18 @@ With `livewire/livewire` installed (Livewire 2), the components in a module's `a
 - The classes come from the module class map, so a cached manifest (`module:cache`) needs no scan.
 - Create one with `module:make:livewire` (see Generators).
 
+### Filament Resources, Pages And Widgets
+
+With `filament/filament` installed (Filament 2), a module's Filament classes join the admin panel on their own, the way a Filament plugin's do:
+
+| Directory | Registered as |
+| --- | --- |
+| `app/Filament/Resources` | resources (their pages, relation managers and widgets too) |
+| `app/Filament/Pages` | pages |
+| `app/Filament/Widgets` | dashboard widgets |
+
+- Only enabled modules register them; abstract classes, and classes that are not a resource, page or widget, are skipped.
+- Only classes directly in each directory count: `Resources/ProductResource/Pages/*` are the resource's pages, not standalone pages.
+- The classes come from the module class map, so nothing is scanned.
+- Create a resource with `module:make:filament-resource` (see Generators).
+

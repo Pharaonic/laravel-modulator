@@ -52,11 +52,20 @@ abstract class TestCase extends Orchestra
 
     protected function getPackageProviders($app)
     {
-        // Livewire is optional: registered first when installed, as an application would.
-        return array_merge(
-            class_exists('Livewire\\LivewireServiceProvider') ? ['Livewire\\LivewireServiceProvider'] : [],
-            [ModulatorServiceProvider::class]
-        );
+        // Livewire and Filament are optional: registered first when installed, as
+        // package discovery would in an application.
+        $optional = [
+            'Livewire\\LivewireServiceProvider',
+            'BladeUI\\Icons\\BladeIconsServiceProvider',
+            'BladeUI\\Heroicons\\BladeHeroiconsServiceProvider',
+            'Filament\\Support\\SupportServiceProvider',
+            'Filament\\Forms\\FormsServiceProvider',
+            'Filament\\Tables\\TablesServiceProvider',
+            'Filament\\Notifications\\NotificationsServiceProvider',
+            'Filament\\FilamentServiceProvider',
+        ];
+
+        return array_merge(array_values(array_filter($optional, 'class_exists')), [ModulatorServiceProvider::class]);
     }
 
     protected function resolveApplicationConfiguration($app)
@@ -89,6 +98,26 @@ abstract class TestCase extends Orchestra
     {
         $this->modulator = array_replace($this->modulator, $modulator);
         $this->refreshApplication();
+    }
+
+    /**
+     * Skip the test unless the optional package that provides $class is installed.
+     */
+    protected function requiresPackage(string $class, string $package): void
+    {
+        if (! class_exists($class)) {
+            $this->markTestSkipped($package.' is not installed.');
+        }
+    }
+
+    /**
+     * Skip the test when the optional package that provides $class is installed.
+     */
+    protected function withoutPackage(string $class, string $package): void
+    {
+        if (class_exists($class)) {
+            $this->markTestSkipped($package.' is installed.');
+        }
     }
 
     /**

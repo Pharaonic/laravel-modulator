@@ -30,11 +30,12 @@ final class JobMakeCommand extends GeneratorCommand
     {
         return [
             ['sync', null, InputOption::VALUE_NONE, 'Generate a synchronous job'],
+            ['batched', null, InputOption::VALUE_NONE, 'Generate a batchable queued job'],
         ];
     }
 
     protected function build(Module $module, string $class, array $segments, array $replace, Repository $config): array
     {
-        return [$this->option('sync') ? 'job.sync.stub' : $this->stub, $replace, []];
+        return [$this->option('batched') ? 'job.batched.stub' : ($this->option('sync') ? 'job.sync.stub' : $this->stub), $replace, []];
     }
 }

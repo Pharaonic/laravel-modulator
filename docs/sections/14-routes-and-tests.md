@@ -53,10 +53,10 @@ Pest reads the same `phpunit.xml`, so `vendor/bin/pest --testsuite Modules` work
 
 ### Pest
 
-The generators write Pest tests when `vendor/bin/pest` exists, unless you pass `--phpunit`. Laravel 7's skeleton pins `nunomaduro/collision` ^4.3, and Pest 1 needs ^5.11, so install them together:
+The generators write Pest tests when `vendor/bin/pest` exists, unless you pass `--phpunit`. Install Pest 1:
 
 ```bash title="Terminal" no-line-numbers
-composer require --dev nunomaduro/collision:^5.11 pestphp/pest:^1.23 pestphp/pest-plugin-laravel:^1.4 -W
+composer require --dev pestphp/pest:^1.23 pestphp/pest-plugin-laravel:^1.4 -W
 php artisan pest:install
 ```
 
