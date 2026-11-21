@@ -2,11 +2,16 @@
 - Laravel Package {color=blue}
 - {release.label} {color=green}
 - {package.license} License {color=purple}
+- AI Ready {color=violet}
 :::
 
 # Modulator
 
 Modulator splits a Laravel application into modules that are found by convention. A directory with an app/ folder is a module: its classes autoload with no composer.json, its provider, routes, views, translations, config and migrations load the Laravel way, and Composer packages can ship modules that your application overrides with a local copy.
+
+:::success AI Ready
+Modulator ships Laravel Boost resources: a guideline loaded in every session and a `modulator-development` skill loaded when your agent works on modules. Run `php artisan boost:install` and Claude Code, Cursor, Codex, Copilot or Gemini CLI create modules and classes with the right `module:*` commands and namespaces.
+:::
 
 :::features
 ### Convention Discovery {icon="search"}
@@ -26,6 +31,9 @@ module:enable and module:disable edit your config file in place and refuse what 
 
 ### Architecture Checks {icon="check-circle"}
 module:doctor, module:graph and module:check find broken sources, cycles and undeclared module dependencies.
+
+### AI Ready {icon="bot"}
+Laravel Boost guideline and skill included, so php artisan boost:install teaches your coding agent the package.
 :::
 
 :::info Quick Tip
