@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 10.1.0 - Unreleased
+
+### Added
+
+- Livewire 4: with `livewire/livewire` 4 installed, a module's `app/Livewire` components work as `<slug>::<name>` (`<livewire:shop::cart />`), through a Livewire namespace per module. Livewire 3 keeps working as before.
+
 ## 10.0.0 - 2026-11-21
 
 ### Added
