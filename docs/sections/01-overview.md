@@ -32,6 +32,12 @@ module:enable and module:disable edit your config file in place and refuse what 
 ### Architecture Checks {icon="check-circle"}
 module:doctor, module:graph and module:check find broken sources, cycles and undeclared module dependencies.
 
+### Generators {icon="terminal"}
+module:make plus a module:make command for every Laravel make command, with stubs you can replace.
+
+### Namespaced Resources {icon="tag"}
+Views, translations and config are namespaced by the module slug, as in shop::index and modules.shop.billing.
+
 ### AI Ready {icon="bot"}
 Laravel Boost guideline and skill included, so php artisan boost:install teaches your coding agent the package.
 :::
