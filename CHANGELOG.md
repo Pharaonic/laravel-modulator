@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 10.1.1 - Unreleased
+
+### Changed
+
+- The package page and the docs overview show nine feature cards, with architecture checks, generators and namespaced resources on both, so every row is full. No code changes.
+
 ## 10.1.0 - 2026-11-21
 
 ### Added
