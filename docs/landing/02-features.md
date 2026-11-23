@@ -23,6 +23,12 @@ items:
   - icon: shield-check
     title: Safe By Default
     text: "`module:enable` edits your config in place, `module:delete` confirms, and `module:migrate:fresh` never drops your database."
+  - icon: check-circle
+    title: Architecture Checks
+    text: "`module:doctor`, `module:graph` and `module:check` find broken sources, dependency cycles and undeclared module dependencies."
+  - icon: tag
+    title: Namespaced Resources
+    text: "Views, translations and config are namespaced by slug: `view('shop::index')`, `__('shop::messages.key')`, `config('modules.shop.billing')`."
   - icon: bot
     title: AI Ready
     text: "Ships a Laravel Boost guideline and a `modulator-development` skill, so `php artisan boost:install` teaches Claude Code, Cursor, Codex or Copilot the module layout and every `module:*` command."
